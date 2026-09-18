@@ -1,0 +1,6155 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام إدارة بيانات الجينوم النباتي — PGDMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+/* =========================================================
+   PGDMS ? Plant Genomic Data Management System
+   ???? ??????? ?? ???? ??? / ????? ?????? ??????? ????????
+   ========================================================= */
+
+:root {
+  /* ????? ??? ???????? */
+  --mewa-green: #1b8354;
+  --mewa-green-dark: #067647;
+  --mewa-green-deep: #085d3a;
+  --mewa-green-light: #5ab891;
+  --mewa-green-soft: #e5f4e6;
+  --mewa-green-mist: #f6fef9;
+  --mewa-navy: #193661;
+  --mewa-navy-deep: #0f203a;
+  --mewa-blue: #026aa2;
+  --mewa-sky: #eef4ff;
+
+  /* ????? */
+  --success: #079455;
+  --warning: #dc6803;
+  --danger: #d92d20;
+  --info: #026aa2;
+  --pending: #b54708;
+
+  /* ??????? */
+  --ink: #101828;
+  --ink-2: #344054;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --line-strong: #d0d5dd;
+  --surface: #ffffff;
+  --canvas: #f5f7fa;
+  --sidebar: #0f203a;
+
+  /* ???? */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 12px 40px rgba(16, 24, 40, 0.12);
+
+  /* ????? */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+  --sidebar-w: 280px;
+  --header-h: 64px;
+  --font: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --transition: 180ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--canvas);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- ???? ?????? ???????? ---------- */
+.gov-bar {
+  background: var(--mewa-navy-deep);
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gov-bar span {
+  opacity: 0.9;
+}
+
+.gov-bar .badge-sa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gov-bar .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mewa-green-light);
+}
+
+/* ---------- ???? ?????? ---------- */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background:
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(27, 131, 84, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgba(25, 54, 97, 0.15), transparent 50%),
+    linear-gradient(160deg, #f6fef9 0%, #eef4ff 45%, #f5f7fa 100%);
+}
+
+.login-wrap {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 0;
+  max-width: 1100px;
+  width: min(1100px, 94vw);
+  margin: 32px auto;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--line);
+  min-height: 620px;
+}
+
+.login-brand {
+  background:
+    linear-gradient(145deg, rgba(15, 32, 58, 0.92), rgba(8, 93, 58, 0.85)),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(160deg, #0f203a, #085d3a);
+  color: #fff;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.login-brand::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -30% auto;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(90, 184, 145, 0.2);
+  filter: blur(40px);
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-mark .logo-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(8px);
+}
+
+.brand-mark .logo-mark svg {
+  width: 32px;
+  height: 32px;
+}
+
+.brand-mark h1 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.brand-mark p {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.login-hero-copy {
+  position: relative;
+  z-index: 1;
+  margin-top: 48px;
+}
+
+.login-hero-copy h2 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.login-hero-copy p {
+  font-size: 15px;
+  opacity: 0.88;
+  max-width: 36ch;
+}
+
+.login-features {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.login-features li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  opacity: 0.92;
+}
+
+.login-features .ico {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.login-panel {
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-panel h3 {
+  font-size: 22px;
+  color: var(--mewa-navy);
+  margin-bottom: 6px;
+}
+
+.login-panel .sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+
+.form-control {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--mewa-green);
+  box-shadow: 0 0 0 3px rgba(27, 131, 84, 0.15);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 96px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.role-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  cursor: pointer;
+  background: #fff;
+  text-align: center;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.role-card:hover {
+  border-color: var(--mewa-green-light);
+  background: var(--mewa-green-mist);
+}
+
+.role-card.active {
+  border-color: var(--mewa-green);
+  background: var(--mewa-green-soft);
+  box-shadow: 0 0 0 3px rgba(27, 131, 84, 0.12);
+}
+
+.role-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.role-card .role-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  color: var(--mewa-green);
+}
+
+.role-card strong {
+  display: block;
+  font-size: 13px;
+  color: var(--mewa-navy);
+}
+
+.role-card small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--mewa-green);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--mewa-green-dark);
+}
+
+.btn-navy {
+  background: var(--mewa-navy);
+  color: #fff;
+}
+
+.btn-navy:hover:not(:disabled) {
+  background: var(--mewa-navy-deep);
+}
+
+.btn-outline {
+  background: #fff;
+  border-color: var(--line-strong);
+  color: var(--ink-2);
+}
+
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--mewa-green);
+  color: var(--mewa-green);
+  background: var(--mewa-green-mist);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.btn-ghost:hover {
+  background: var(--canvas);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-warning {
+  background: var(--warning);
+  color: #fff;
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.login-foot {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- ???? ??????? ---------- */
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: auto var(--header-h) 1fr;
+}
+
+.app-shell .gov-bar {
+  grid-column: 1 / -1;
+}
+
+.sidebar {
+  grid-row: 2 / -1;
+  background: var(--sidebar);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 20px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-brand .mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--mewa-green), var(--mewa-green-light));
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-brand .mark svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sidebar-brand h1 {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.sidebar-brand small {
+  display: block;
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-section {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 12px 12px 6px;
+  font-weight: 600;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13.5px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: right;
+  transition: all var(--transition);
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: rgba(27, 131, 84, 0.35);
+  color: #fff;
+  box-shadow: inset 3px 0 0 var(--mewa-green-light);
+}
+
+.nav-item .ni {
+  width: 20px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.sidebar-user {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mewa-green), var(--mewa-blue));
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sidebar-user .meta strong {
+  display: block;
+  font-size: 13px;
+}
+
+.sidebar-user .meta small {
+  font-size: 11px;
+  opacity: 0.65;
+}
+
+.topbar {
+  grid-column: 2;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--header-h);
+}
+
+.topbar-title h2 {
+  font-size: 17px;
+  color: var(--mewa-navy);
+  font-weight: 700;
+}
+
+.topbar-title p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--mewa-green-soft);
+  color: var(--mewa-green-deep);
+  border: 1px solid #b8eacb;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.main {
+  grid-column: 2;
+  padding: 24px 28px 40px;
+  min-width: 0;
+}
+
+.view {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+.view.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- ?????? ??????? ---------- */
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.page-head h3 {
+  font-size: 20px;
+  color: var(--mewa-navy);
+}
+
+.page-head p {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 18px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--mewa-green);
+}
+
+.kpi.navy::before {
+  background: var(--mewa-navy);
+}
+
+.kpi.warn::before {
+  background: var(--warning);
+}
+
+.kpi.info::before {
+  background: var(--info);
+}
+
+.kpi .label {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.kpi .value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mewa-navy);
+  line-height: 1;
+}
+
+.kpi .trend {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.panel-header h4 {
+  font-size: 15px;
+  color: var(--mewa-navy);
+}
+
+.panel-body {
+  padding: 18px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.col-4 {
+  grid-column: span 4;
+}
+.col-6 {
+  grid-column: span 6;
+}
+.col-8 {
+  grid-column: span 8;
+}
+.col-12 {
+  grid-column: span 12;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+table.data th,
+table.data td {
+  padding: 12px 14px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+table.data th {
+  background: #f8fafc;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+table.data tbody tr:hover {
+  background: var(--mewa-green-mist);
+}
+
+table.data tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.badge-green {
+  background: #dcfae6;
+  color: #067647;
+}
+.badge-blue {
+  background: #e0f2fe;
+  color: #026aa2;
+}
+.badge-amber {
+  background: #fef0c7;
+  color: #b54708;
+}
+.badge-red {
+  background: #fee4e2;
+  color: #b42318;
+}
+.badge-gray {
+  background: #f2f4f7;
+  color: #475467;
+}
+.badge-purple {
+  background: #ebe9fe;
+  color: #5925dc;
+}
+
+.status-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.status-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.status-step .num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 11px;
+  background: #fff;
+}
+
+.status-step.done {
+  color: var(--mewa-green-deep);
+}
+.status-step.done .num {
+  background: var(--mewa-green);
+  border-color: var(--mewa-green);
+  color: #fff;
+}
+.status-step.current {
+  color: var(--mewa-navy);
+  font-weight: 700;
+}
+.status-step.current .num {
+  border-color: var(--mewa-navy);
+  color: var(--mewa-navy);
+  box-shadow: 0 0 0 3px rgba(25, 54, 97, 0.12);
+}
+
+.status-step .sep {
+  width: 28px;
+  height: 2px;
+  background: var(--line);
+  margin: 0 6px;
+}
+
+.status-step.done + .status-step .sep,
+.status-step.done .sep {
+  background: var(--mewa-green-light);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.filters .form-group {
+  margin: 0;
+  min-width: 160px;
+  flex: 1;
+}
+
+.filters .form-control {
+  height: 38px;
+}
+
+.upload-zone {
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  background: var(--mewa-green-mist);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.upload-zone:hover {
+  border-color: var(--mewa-green);
+  background: var(--mewa-green-soft);
+}
+
+.upload-zone strong {
+  display: block;
+  color: var(--mewa-navy);
+  margin: 8px 0 4px;
+}
+
+.upload-zone p {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.file-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.file-row .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.file-ico {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--mewa-sky);
+  color: var(--mewa-blue);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.approval-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: #fff;
+  display: grid;
+  gap: 12px;
+}
+
+.approval-card.pending {
+  border-inline-start: 4px solid var(--warning);
+}
+
+.approval-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.approval-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 180px;
+  padding-top: 10px;
+}
+
+.chart-bars .bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.chart-bars .bar {
+  width: 100%;
+  max-width: 42px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--mewa-green-light), var(--mewa-green));
+  transition: height 0.4s ease;
+}
+
+.chart-bars .bar-wrap span {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.donut-legend {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.donut-legend .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.donut-legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+/* ---------- ???? ????? ?????? ??? ??????? ---------- */
+.map-picker {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+}
+
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--mewa-green-mist);
+}
+
+.map-canvas {
+  width: 100%;
+  height: 280px;
+  background: #eef2f6;
+  position: relative;
+  z-index: 0;
+}
+
+.map-canvas .leaflet-marker-icon.map-pin {
+  filter: drop-shadow(0 3px 6px rgba(16, 24, 40, 0.3));
+}
+
+.map-coords {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 12px;
+  padding: 14px;
+  background: #fafbfc;
+}
+
+.map-coords .meta-label {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.map-coords .form-control {
+  height: 38px;
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .map-coords {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- ????? ?????? ???????? (Modal) ---------- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.55);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: min(640px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+
+.modal-header h4 {
+  font-size: 16px;
+  color: var(--mewa-navy);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.modal-close:hover {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+/* ---------- ????? ????? ???????? ---------- */
+.edit-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.edit-menu-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 210px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 40;
+  padding: 6px;
+}
+
+.edit-menu.open .edit-menu-panel {
+  display: block;
+}
+
+.edit-menu-panel button {
+  display: block;
+  width: 100%;
+  text-align: right;
+  border: 0;
+  background: transparent;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.edit-menu-panel button:hover {
+  background: var(--canvas);
+  color: var(--mewa-navy);
+}
+
+/* ---------- ??????? ??????? ---------- */
+.perm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.perm-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.perm-item:hover {
+  border-color: #b8c4ce;
+}
+
+.perm-item.is-allowed {
+  background: #f3faf6;
+  border-color: #abefc6;
+}
+
+.perm-item.is-denied {
+  background: #fef6f5;
+  border-color: #fecdca;
+}
+
+.perm-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--nama-primary, #1b8354);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.perm-item-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.perm-item-text strong {
+  font-size: 13.5px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.perm-item-text small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.perm-item-state {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.perm-item.is-allowed .perm-item-state {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.perm-item.is-denied .perm-item-state {
+  color: #067647;
+  background: #dcfae6;
+}
+
+.perm-cell.allowed {
+  color: #067647;
+  font-weight: 700;
+}
+
+.perm-cell.denied {
+  color: var(--muted);
+}
+
+.modal-body {
+  padding: 20px 22px;
+}
+
+.modal-body .meta-label {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--line);
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .modal-footer {
+    justify-content: stretch;
+  }
+  .modal-footer .btn {
+    flex: 1;
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: var(--mewa-navy);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  font-size: 13.5px;
+  z-index: 100;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 360px;
+}
+
+.toast.show {
+  transform: none;
+  opacity: 1;
+}
+
+.toast.success {
+  background: var(--mewa-green-deep);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--mewa-navy);
+}
+
+.tab.active {
+  color: var(--mewa-green);
+  border-bottom-color: var(--mewa-green);
+}
+
+.help-text {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 18px 0;
+}
+
+.mobile-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.4);
+  z-index: 40;
+}
+
+.overlay.show {
+  display: block;
+}
+
+/* ---------- ????? ???????? ---------- */
+@media print {
+  .gov-bar,
+  .sidebar,
+  .topbar,
+  .no-print {
+    display: none !important;
+  }
+  .app-shell {
+    display: block;
+  }
+  .main {
+    padding: 0;
+  }
+  .panel {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+
+/* ---------- ??????? ---------- */
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .login-wrap {
+    grid-template-columns: 1fr;
+  }
+  .login-brand {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    inset: 32px auto 0 0;
+    width: var(--sidebar-w);
+    height: calc(100vh - 32px);
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  [dir="rtl"] .sidebar {
+    inset: 32px 0 0 auto;
+    transform: translateX(100%);
+  }
+  .sidebar.open {
+    transform: none;
+  }
+  .topbar,
+  .main {
+    grid-column: 1;
+  }
+  .mobile-toggle {
+    display: inline-flex;
+  }
+  .grid-2,
+  .grid-3,
+  .grid-12 {
+    grid-template-columns: 1fr;
+  }
+  .col-4,
+  .col-6,
+  .col-8,
+  .col-12 {
+    grid-column: span 1;
+  }
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .main {
+    padding: 16px;
+  }
+  .login-panel,
+  .login-brand {
+    padding: 28px 22px;
+  }
+}
+
+/* =========================================================
+   Seed Center Dashboard ? admin role (seed.embryo.sa)
+   ========================================================= */
+.seed-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.seed-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 28px 24px;
+  border-radius: 16px;
+  color: #fff;
+  background-color: #0b5f3a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Cg fill='none' stroke='%231a7a4c' stroke-width='1.2' opacity='0.55'%3E%3Cpath d='M-20 80c80 20 120-30 200-10s140 50 220 20 140-60 220-30 140 70 220 40'/%3E%3Cpath d='M-40 140c90 10 130-40 210-15s150 55 230 25 130-55 210-25 150 65 230 35'/%3E%3Cpath d='M-30 200c100 0 140-35 220-10s140 45 230 20 140-50 220-20 150 55 230 30'/%3E%3Cpath d='M-50 260c110 15 150-25 240 0s160 40 250 15 150-45 240-15 160 50 250 25'/%3E%3Cpath d='M-20 320c90-10 140 20 220 5s150-35 230-10 140 40 220 15 150-30 230-5'/%3E%3Cpath d='M40 40c70 25 110-20 180 0s130 40 200 15 120-45 190-20 140 50 210 30'/%3E%3Cpath d='M100 360c80-15 130 10 200-5s140-30 210-10 130 35 200 10'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg, #084a2e 0%, #0b5f3a 45%, #0f7346 100%);
+  background-size: cover, cover;
+  background-position: center;
+  box-shadow: var(--shadow);
+}
+
+.seed-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 90% at 0% 100%, rgba(255, 255, 255, 0.06), transparent 55%),
+    radial-gradient(ellipse 50% 80% at 100% 0%, rgba(0, 0, 0, 0.12), transparent 50%);
+  pointer-events: none;
+}
+
+.seed-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+}
+
+.seed-kicker {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin: 0 0 8px;
+  letter-spacing: 0.01em;
+}
+
+.seed-hero h3 {
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 700;
+  margin: 0 0 12px;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.seed-lead {
+  max-width: 760px;
+  font-size: 14px;
+  line-height: 1.75;
+  opacity: 0.92;
+  margin: 0 0 18px;
+}
+
+.seed-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.seed-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+.seed-hero-pill svg {
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+.seed-hero-pill strong {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #fff;
+}
+
+.seed-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.seed-kpi {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.seed-kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.seed-trend {
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.seed-kpi-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.seed-kpi-ico.green { background: #e8f7ef; }
+.seed-kpi-ico.amber { background: #fef7e6; }
+.seed-kpi-ico.red { background: #fdecec; }
+.seed-kpi-ico.brown { background: #f3ebe4; }
+
+.seed-kpi-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.seed-kpi-label {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.seed-browse {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seed-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f3f7f4;
+  border: 1px solid #dce8e0;
+}
+
+.seed-filter-bar[hidden] {
+  display: none !important;
+}
+
+.seed-filter-bar-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.seed-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.seed-filter-ico {
+  color: #1b8354;
+  flex-shrink: 0;
+}
+
+.seed-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.seed-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 10px 5px 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.seed-filter-chip:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.seed-filter-chip-x {
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.seed-filter-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #d92d20;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 2px;
+  white-space: nowrap;
+}
+
+.seed-filter-clear:hover {
+  text-decoration: underline;
+}
+
+.seed-filter-clear span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.seed-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.seed-cat {
+  position: relative;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition), transform var(--transition);
+  font-family: inherit;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+}
+
+.seed-cat:hover {
+  border-color: #9fd0b4;
+  transform: translateY(-1px);
+}
+
+.seed-cat.active {
+  background: #e8f5e9;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+}
+
+.seed-cat.has-selection:not(.active) {
+  background: #f3faf4;
+  border-color: #5ab891;
+}
+
+.seed-cat-badge {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #1b8354;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.seed-cat-ico {
+  display: block;
+  font-size: 30px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.seed-cat strong {
+  display: block;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.seed-cat small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.seed-cat.active small {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.seed-cat-caret {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.seed-cat-panel {
+  background: transparent;
+}
+
+.seed-passport-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 2px 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.seed-passport-filter input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--mewa-green);
+  cursor: pointer;
+}
+
+.seed-subcrop-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 8px;
+  justify-items: stretch;
+}
+
+.seed-subcrop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  text-align: center;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.seed-subcrop:hover,
+.seed-subcrop.active {
+  border-color: var(--mewa-green);
+  box-shadow: 0 0 0 3px rgba(27, 131, 84, 0.12);
+  transform: translateY(-1px);
+}
+
+.seed-subcrop.is-dashed {
+  border-style: dashed;
+  border-color: #c5ccd6;
+  background: #fcfcfd;
+}
+
+.seed-subcrop-ico {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.seed-subcrop-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.seed-subcrop.is-hot .seed-subcrop-value,
+.seed-subcrop-value {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.seed-subcrop-status {
+  font-size: 8.5px;
+  color: var(--muted);
+}
+
+.seed-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  background: #fafbfc;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+
+.seed-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.85fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.seed-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.seed-passport {
+  margin-bottom: 0;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.seed-passport.seed-pulse {
+  border-color: var(--mewa-green);
+  box-shadow: 0 0 0 3px rgba(27, 131, 84, 0.18), var(--shadow);
+}
+
+.seed-passport-head {
+  padding: 12px 14px 0;
+}
+
+.seed-passport-head h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: #0f6b5c;
+  margin: 0 0 4px;
+}
+
+.seed-db-ico {
+  font-size: 14px;
+}
+
+.seed-passport-head .seed-hint {
+  margin-bottom: 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.seed-hint {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+.seed-passport-body {
+  padding: 8px 14px 12px !important;
+}
+
+.seed-passport-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 2px 0 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.seed-passport-total span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.seed-passport-total strong {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1b8354;
+  line-height: 1;
+}
+
+.seed-crop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: none;
+  overflow: visible;
+  padding-inline-end: 0;
+}
+
+.seed-crop-item {
+  width: 100%;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #eef1f5;
+  border-radius: 0;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: background var(--transition);
+}
+
+.seed-crop-item:last-child {
+  border-bottom: 0;
+}
+
+.seed-crop-item:hover,
+.seed-crop-item.active {
+  background: #f6fef9;
+}
+
+.seed-crop-row {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 6px;
+  align-items: start;
+}
+
+.seed-crop-metric {
+  text-align: end;
+}
+
+.seed-crop-metric strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.seed-crop-metric em {
+  display: block;
+  margin-top: 1px;
+  font-size: 9px;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.seed-crop-info {
+  min-width: 0;
+}
+
+.seed-crop-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.seed-crop-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.seed-crop-ico {
+  font-size: 12px;
+}
+
+.seed-method {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.seed-crop-saudi {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.seed-crop-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.seed-progress {
+  margin-top: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #eef2f6;
+  overflow: hidden;
+}
+
+.seed-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.seed-side-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.seed-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  text-align: center;
+}
+
+.seed-stat-card strong {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.seed-stat-card span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.seed-stat-card.regions {
+  background: #f0f4f1;
+  border-color: #d7e3db;
+}
+
+.seed-stat-card.regions strong {
+  color: #1b8354;
+}
+
+.seed-stat-card.saudi {
+  background: #f8f3e9;
+  border-color: #e8dcc8;
+}
+
+.seed-stat-card.saudi strong {
+  color: #3f3f46;
+}
+
+.seed-map-panel {
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.seed-map-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+  background: #fafbfc;
+}
+
+.seed-map-tab {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 14px 12px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.seed-map-tab.active {
+  color: var(--mewa-green-dark);
+  border-bottom-color: var(--mewa-green);
+  background: #fff;
+}
+
+.seed-map-title {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin: 0 0 6px;
+  line-height: 1.6;
+}
+
+.seed-map-title strong {
+  color: #1b8354;
+}
+
+.seed-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 12px;
+  padding: 10px 4px 2px;
+}
+
+.seed-legend-note {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.seed-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 2px 0;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink-2);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity var(--transition);
+}
+
+.seed-legend-item i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.seed-legend-item:hover,
+.seed-legend-item.active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.seed-legend-item.active i {
+  outline: 2px solid rgba(16, 24, 40, 0.2);
+  outline-offset: 1px;
+}
+
+.seed-map-canvas {
+  width: 100%;
+  height: 460px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: #e8eef4;
+  z-index: 0;
+}
+
+.seed-map-canvas .leaflet-control-attribution {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.seed-zone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 4px;
+  background: var(--mewa-green-mist);
+  border-radius: 12px;
+}
+
+.seed-zone-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  text-align: start;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.seed-zone-row:hover,
+.seed-zone-row.active {
+  border-color: var(--mewa-green);
+  box-shadow: var(--shadow-sm);
+}
+
+.seed-zone-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.seed-zone-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--mewa-green-deep);
+}
+
+.seed-zone-name i {
+  font-style: normal;
+  font-size: 13px;
+}
+
+.seed-zone-row .seed-zone-count {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.seed-zone-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.seed-zone-info small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.seed-zone-sub-count {
+  font-weight: 700;
+}
+
+.seed-zone-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: #eef2f6;
+  overflow: hidden;
+}
+
+.seed-zone-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.seed-explore {
+  margin-top: 8px;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(27, 131, 84, 0.06), transparent 40%),
+    #f5f7fa;
+  border: 1px solid var(--line);
+}
+
+.seed-explore-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mewa-green-dark);
+  background: var(--mewa-green-soft);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 10px;
+}
+
+.seed-explore-head h3 {
+  font-size: 20px;
+  color: var(--mewa-navy);
+  margin: 0 0 18px;
+  line-height: 1.45;
+  max-width: 720px;
+}
+
+.seed-charts-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.seed-charts-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.seed-chart-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px 18px;
+}
+
+.seed-chart-regional {
+  display: flex;
+  flex-direction: column;
+}
+
+.seed-chart-head {
+  margin-bottom: 14px;
+}
+
+.seed-chart-head h4 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--mewa-navy);
+}
+
+.seed-chart-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Donut */
+.seed-donut-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  direction: ltr;
+}
+
+.seed-donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.seed-donut-legend li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.seed-donut-legend .vals {
+  display: inline-flex;
+  gap: 8px;
+  min-width: 64px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.seed-donut-legend .vals em {
+  font-style: normal;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.seed-donut-legend .vals strong {
+  color: var(--ink);
+}
+
+.seed-donut-legend .name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-weight: 600;
+  direction: rtl;
+}
+
+.seed-donut-legend .name i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.seed-donut {
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.04);
+}
+
+.seed-donut-hole {
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.04);
+}
+
+.seed-donut-hole strong {
+  font-size: 18px;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.seed-donut-hole span {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* Horizontal bars */
+.seed-hbars {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+}
+
+.seed-hbar-row {
+  display: grid;
+  grid-template-columns: 88px 1fr 28px;
+  gap: 8px;
+  align-items: center;
+}
+
+.seed-hbars.origin .seed-hbar-row {
+  grid-template-columns: 92px 1fr;
+}
+
+.seed-region-bars,
+.seed-origin-chart {
+  direction: ltr;
+}
+
+.seed-hbar-name {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seed-hbar-track {
+  height: 14px;
+  border-radius: 4px;
+  background: #eef2f6;
+  overflow: hidden;
+  position: relative;
+}
+
+.seed-hbar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  min-width: 2px;
+}
+
+.seed-hbar-val {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.seed-stack-bar {
+  display: flex;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 2px;
+}
+
+.seed-stack-bar .saudi {
+  background: #1b8354;
+  height: 100%;
+}
+
+.seed-stack-bar .intl {
+  background: #d4a574;
+  height: 100%;
+}
+
+.seed-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-inline-start: 96px;
+  font-size: 10.5px;
+  color: var(--muted);
+  direction: ltr;
+}
+
+.seed-hbars.origin + .seed-axis,
+.seed-origin-chart .seed-axis {
+  padding-inline-start: 100px;
+}
+
+.seed-origin-legend {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.seed-origin-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seed-origin-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.seed-origin-legend i.saudi {
+  background: #1b8354;
+}
+
+.seed-origin-legend i.intl {
+  background: #d4a574;
+}
+
+@media (max-width: 1100px) {
+  .seed-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .seed-cat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .seed-subcrop-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .seed-main-grid,
+  .seed-charts-layout {
+    grid-template-columns: 1fr;
+  }
+  .seed-zone-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .seed-hero {
+    padding: 22px 18px 20px;
+  }
+  .seed-hero-pills {
+    gap: 8px;
+  }
+  .seed-hero-stats {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .seed-kpi-grid,
+  .seed-cat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .seed-subcrop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .seed-map-canvas {
+    height: 300px;
+  }
+  .seed-zone-grid {
+    grid-template-columns: 1fr;
+  }
+  .seed-donut-wrap {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .seed-donut-legend {
+    width: 100%;
+  }
+  .seed-hbar-row {
+    grid-template-columns: 72px 1fr 24px;
+  }
+  .seed-axis {
+    padding-inline-start: 80px;
+  }
+}
+
+  </style>
+</head>
+<body class="login-page">
+<div id="loginPage">
+<div class="gov-bar">
+    <div class="badge-sa">
+      <span class="dot"></span>
+      موقع حكومي تابع لوزارة البيئة والمياه والزراعة
+    </div>
+    <span>منظومة منصة نما للخدمات الإلكترونية</span>
+  </div>
+
+  <div class="login-wrap">
+    <aside class="login-brand">
+      <div class="brand-mark">
+        <div class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 3L28 10V22L16 29L4 22V10L16 3Z" stroke="white" stroke-width="1.6"/>
+            <path d="M16 8C18.5 11 20 14 20 17C20 20.5 18.2 23 16 23C13.8 23 12 20.5 12 17C12 14 13.5 11 16 8Z" fill="white" fill-opacity="0.9"/>
+            <path d="M16 14V23" stroke="#1b8354" stroke-width="1.4"/>
+          </svg>
+        </div>
+        <div>
+          <h1>نظام إدارة بيانات الجينوم النباتي</h1>
+          <p>Plant Genomic Data Management System</p>
+        </div>
+      </div>
+
+      <div class="login-hero-copy">
+        <h2>مركز البذور والتقاوي</h2>
+        <p>
+          منصة رقمية موحّدة لتسجيل النباتات والعينات المختبرية، وإدارة التحاليل الجينومية،
+          وحفظ النتائج والملفات وإصدار التقارير — ضمن هوية منصة نما.
+        </p>
+        <ul class="login-features">
+          <li><span class="ico">①</span> تسجيل وتتبع العينات عبر دورة عمل كاملة</li>
+          <li><span class="ico">②</span> اعتماد ومراجعة النتائج قبل النشر</li>
+          <li><span class="ico">③</span> تقارير وإحصائيات تنفيذية حسب الصلاحية</li>
+          <li><span class="ico">④</span> سجل تدقيق كامل لجميع العمليات</li>
+        </ul>
+      </div>
+
+      <p style="opacity:.7;font-size:12px;position:relative;z-index:1">
+        وزارة البيئة والمياه والزراعة — الإصدار 1.0 (نموذج تصميم)
+      </p>
+    </aside>
+
+    <section class="login-panel">
+      <h3>أهلاً بك في النظام</h3>
+      <p class="sub">اختر دور المستخدم للدخول إلى الشاشات المخصصة له وفق وثيقة المتطلبات.</p>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <label for="username">اسم المستخدم</label>
+          <input class="form-control" id="username" name="username" value="demo.user" required />
+        </div>
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input class="form-control" id="password" type="password" name="password" value="••••••••" required />
+        </div>
+
+        <div class="form-group">
+          <label for="roleSelect">الدخول بصفة</label>
+          <select class="form-control" id="roleSelect" name="role" required>
+            <option value="researcher" selected>🌿 الباحث / الموظف — نباتات · عينات · تقارير</option>
+            <option value="technician">🔬 فني المختبر — استلام · تحاليل · ملفات</option>
+            <option value="manager">✅ مدير المختبر — مراجعة · اعتماد</option>
+            <option value="admin">⚙️ مسؤول النظام — مستخدمون · صلاحيات</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">دخول إلى لوحة النظام</button>
+      </form>
+
+      <p class="login-foot">
+        هذا نموذج تصميمي للعرض والمناقشة — لا يُستخدم لبيانات حقيقية.<br />
+        متوافق مع متطلبات وثيقة مشروع الجينوم النباتي · يوليو 2026
+      </p>
+    </section>
+  </div>
+</div>
+
+<div id="appPage" style="display:none">
+<div class="overlay" id="overlay"></div>
+
+  <div class="app-shell">
+    <div class="gov-bar">
+      <div class="badge-sa"><span class="dot"></span> وزارة البيئة والمياه والزراعة — مركز البذور والتقاوي</div>
+      <span>منظومة منصة نما · نظام الجينوم النباتي (PGDMS)</span>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="mark">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 3L28 10V22L16 29L4 22V10L16 3Z" stroke="white" stroke-width="1.6"/><path d="M16 8C18.5 11 20 14 20 17C20 20.5 18.2 23 16 23C13.8 23 12 20.5 12 17C12 14 13.5 11 16 8Z" fill="white"/></svg>
+        </div>
+        <div>
+          <h1>الجينوم النباتي</h1>
+          <small>PGDMS · نما</small>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+      <div class="sidebar-user">
+        <div class="avatar" id="userAvatar">م</div>
+        <div class="meta">
+          <strong id="userName">مستخدم</strong>
+          <small id="userRoleLabel">الدور</small>
+        </div>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-toggle" id="menuBtn" aria-label="القائمة">☰</button>
+        <div class="topbar-title">
+          <h2 id="pageTitle">لوحة المؤشرات</h2>
+          <p id="pageSubtitle">نظرة عامة على بيانات الجينوم النباتي</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="role-chip" id="roleChip">—</span>
+        <button class="btn btn-outline btn-sm no-print" onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ===== لوحة المؤشرات ===== -->
+      <section class="view active" id="view-dashboard" data-title="لوحة المؤشرات" data-sub="نظرة عامة على بيانات الجينوم النباتي">
+
+        <!-- لوحة تشغيلية للأدوار الأخرى -->
+        <div id="dashboard-ops" data-roles="researcher,technician,manager">
+          <div class="page-head">
+            <div>
+              <h3>لوحة المؤشرات التنفيذية</h3>
+              <p>ملخص تشغيلي لمركز البذور والتقاوي — يُعرض حسب صلاحية الدور.</p>
+            </div>
+            <div class="no-print" style="display:flex;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="navigate('reports')">التقارير التفصيلية</button>
+              <button class="btn btn-primary btn-sm" onclick="window.print()">طباعة الملخص</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="label">عدد النباتات المسجّلة</div>
+              <div class="value">248</div>
+              <div class="trend">▲ 12 هذا الشهر</div>
+            </div>
+            <div class="kpi navy">
+              <div class="label">عدد العينات</div>
+              <div class="value">1,036</div>
+              <div class="trend">▲ 48 هذا الشهر</div>
+            </div>
+            <div class="kpi warn">
+              <div class="label">تحاليل جارية</div>
+              <div class="value">37</div>
+              <div class="trend" style="color:var(--warning)">تحتاج متابعة</div>
+            </div>
+            <div class="kpi info">
+              <div class="label">تحاليل مكتملة ومعتمدة</div>
+              <div class="value">812</div>
+              <div class="trend">نسبة الاعتماد 94%</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><h4>توزيع العينات حسب المنطقة</h4></div>
+              <div class="panel-body">
+                <div class="chart-bars">
+                  <div class="bar-wrap"><div class="bar" style="height:78%"></div><span>الرياض</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:62%"></div><span>القصيم</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:55%"></div><span>عسير</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:48%"></div><span>جازان</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:40%"></div><span>حائل</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:32%"></div><span>تبوك</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:28%"></div><span>أخرى</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h4>توزيع التحاليل حسب النوع</h4></div>
+              <div class="panel-body">
+                <div class="donut-legend">
+                  <div class="row"><span><i class="dot" style="background:#1b8354"></i> Whole Genome Sequencing</span><strong>34%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#193661"></i> DNA Barcoding</span><strong>22%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#026aa2"></i> SNP Analysis</span><strong>18%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#5ab891"></i> RNA Sequencing</span><strong>15%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#dc6803"></i> Marker Analysis</span><strong>11%</strong></div>
+                </div>
+                <div style="margin-top:18px;height:12px;border-radius:999px;overflow:hidden;display:flex">
+                  <div style="width:34%;background:#1b8354"></div>
+                  <div style="width:22%;background:#193661"></div>
+                  <div style="width:18%;background:#026aa2"></div>
+                  <div style="width:15%;background:#5ab891"></div>
+                  <div style="width:11%;background:#dc6803"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h4>أحدث العينات</h4>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('samples')">عرض الكل</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>كود العينة</th>
+                    <th>النبات</th>
+                    <th>الحالة</th>
+                    <th>موقع الجمع</th>
+                    <th>تاريخ الجمع</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SMP-2026-0481</td>
+                    <td>قمح صنف نجران</td>
+                    <td><span class="badge badge-amber">قيد التحليل</span></td>
+                    <td>نجران</td>
+                    <td>2026-07-12</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0480</td>
+                    <td>تمر خلاص</td>
+                    <td><span class="badge badge-blue">مستلمة</span></td>
+                    <td>الأحساء</td>
+                    <td>2026-07-11</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0479</td>
+                    <td>شعير حولي</td>
+                    <td><span class="badge badge-green">مكتملة</span></td>
+                    <td>القصيم</td>
+                    <td>2026-07-09</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0478</td>
+                    <td>طماطم محلية</td>
+                    <td><span class="badge badge-gray">مؤرشفة</span></td>
+                    <td>جازان</td>
+                    <td>2026-07-08</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- لوحة مركز بيانات البذور — مسؤول النظام (مستوحاة من seed.embryo.sa) -->
+        <div id="dashboard-seed" data-roles="admin" class="seed-dash">
+          <div class="seed-hero" style="display:none">
+            <div class="seed-hero-inner">
+              <p class="seed-kicker">وزارة البيئة والمياه والزراعة</p>
+              <h3>مركز بيانات البذور والتقاوي - وزارة الزراعة</h3>
+              <p class="seed-lead">
+                بيانات الجواز لـ 10 محاصيل (قمح الخبز، قمح الدوروم، بن، شعير، دخن، ذرة رفيعة، سمسم، فول، مانجو، بابايا) عبر المناطق السعودية.
+              </p>
+              <div class="seed-hero-pills">
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 2h8a2 2 0 0 1 2 2v16l-6-3-6 3V4a2 2 0 0 1 2-2zm2 5v2h4V7h-4zm0 4v2h4v-2h-4z"/></svg>
+                  <strong>517</strong> إجمالي الاعتمادات
+                </span>
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2C8 2 5 5.5 5 9.5c0 4.5 4.2 8.8 6.2 10.6a1.2 1.2 0 0 0 1.6 0C14.8 18.3 19 14 19 9.5 19 5.5 16 2 12 2zm0 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></svg>
+                  <strong>29</strong> محاصيل بيانات الجواز
+                </span>
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.5 9h-3.1a15 15 0 0 0-1.3-5 8 8 0 0 1 4.4 5zM12 4c.9 1.4 1.8 3.4 2.2 5.5H9.8C10.2 7.4 11.1 5.4 12 4zM4.5 11a8 8 0 0 1 4.4-5 15 15 0 0 0-1.3 5H4.5zm0 2h3.1a15 15 0 0 0 1.3 5 8 8 0 0 1-4.4-5zM12 20c-.9-1.4-1.8-3.4-2.2-5.5h4.4C13.8 16.6 12.9 18.6 12 20zm3.1-1a15 15 0 0 0 1.3-5h3.1a8 8 0 0 1-4.4 5zM9.8 13c.3 1.7.9 3.4 1.6 5h1.2c.7-1.6 1.3-3.3 1.6-5H9.8z"/></svg>
+                  <strong>10</strong> منطقة سعودية
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-kpi-grid">
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico green" aria-hidden="true">🗄️</span>
+              </div>
+              <div class="seed-kpi-value">517</div>
+              <div class="seed-kpi-label">إجمالي الاعتمادات</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico amber" aria-hidden="true">🍃</span>
+              </div>
+              <div class="seed-kpi-value">29</div>
+              <div class="seed-kpi-label">محاصيل مُتتبعة</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico red" aria-hidden="true">🌐</span>
+              </div>
+              <div class="seed-kpi-value">10</div>
+              <div class="seed-kpi-label">مناطق سعودية</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico brown" aria-hidden="true">💾</span>
+              </div>
+              <div class="seed-kpi-value">9 تيرابايت</div>
+              <div class="seed-kpi-label">بيانات جينومية</div>
+            </article>
+          </div>
+
+          <div class="seed-browse" id="seedBrowse">
+            <div class="seed-cat-grid" id="seedCatGrid">
+              <button type="button" class="seed-cat" data-category="grains" aria-expanded="false">
+                <span class="seed-cat-ico">🌾</span>
+                <strong>الحبوب</strong>
+                <small><span class="seed-cat-count">6 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="legumes" aria-expanded="false">
+                <span class="seed-cat-ico">🫘</span>
+                <strong>البقوليات</strong>
+                <small><span class="seed-cat-count">5 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="vegetables" aria-expanded="false">
+                <span class="seed-cat-ico">🥬</span>
+                <strong>الخضروات</strong>
+                <small><span class="seed-cat-count">3 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="fruits" aria-expanded="false">
+                <span class="seed-cat-ico">🍎</span>
+                <strong>الفواكه</strong>
+                <small><span class="seed-cat-count">12 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="oilseeds" aria-expanded="false">
+                <span class="seed-cat-ico">🌰</span>
+                <strong>البذور الزيتية</strong>
+                <small><span class="seed-cat-count">1 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="other" aria-expanded="false">
+                <span class="seed-cat-ico">☕</span>
+                <strong>أخرى</strong>
+                <small><span class="seed-cat-count">2 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+            </div>
+
+            <div class="seed-cat-panel" id="seedCatPanel" hidden>
+              <label class="seed-passport-filter">
+                <input type="checkbox" id="seedGenomicOnly" />
+                <span>لها بيانات جواز سفر جينومية (WGS/GBS) فقط</span>
+              </label>
+              <div class="seed-subcrop-grid" id="seedSubcropGrid"></div>
+            </div>
+
+            <div class="seed-filter-bar" id="seedFilterBar" hidden>
+              <div class="seed-filter-bar-main">
+                <span class="seed-filter-label">
+                  <svg class="seed-filter-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path fill="currentColor" d="M3 5h18l-7 8v5l-4 2v-7L3 5z"/>
+                  </svg>
+                  تصفية حسب:
+                </span>
+                <div class="seed-filter-chips" id="seedFilterChips"></div>
+                <button type="button" class="seed-filter-clear" id="seedFilterClear">
+                  <span aria-hidden="true">×</span> مسح الكل
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-main-grid">
+            <!-- الخريطة يميناً (أول عنصر في RTL) -->
+            <div class="panel seed-map-panel">
+              <div class="seed-map-tabs" role="tablist">
+                <button type="button" class="seed-map-tab" data-seed-tab="zones" role="tab">🗄️ توزيع المناطق</button>
+                <button type="button" class="seed-map-tab active" data-seed-tab="regional" role="tab">📍 التوزيع الإقليمي</button>
+              </div>
+              <div class="panel-body">
+                <div id="seed-tab-regional" class="seed-tab-pane">
+                  <p class="seed-map-title">
+                    <strong>عرض <span id="seedSaudiCount">342</span> اعتماد سعودي</strong>
+                    — خريطة تفاعلية توضح مواقع جمع البذور في المملكة العربية السعودية
+                  </p>
+                  <p class="seed-hint">انقر على علامة منطقة لتمييزها. انقر على بلاطات المحاصيل للتصفية.</p>
+                  <div id="seedMap" class="seed-map-canvas" aria-label="خريطة توزيع الاعتمادات"></div>
+                  <div class="seed-map-legend" id="seedMapLegend" aria-label="مفتاح ألوان المحاصيل"></div>
+                </div>
+                <div id="seed-tab-zones" class="seed-tab-pane" hidden>
+                  <p class="seed-map-title"><strong>توزيع الاعتمادات حسب المناطق الإدارية</strong></p>
+                  <div class="seed-zone-grid" id="seedZonesList"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ملخص بيانات الجواز يساراً -->
+            <div class="seed-side-stack">
+              <aside class="panel seed-passport">
+                <div class="seed-passport-head">
+                  <h4><span class="seed-db-ico" aria-hidden="true">🗄️</span> ملخص بيانات الجواز</h4>
+                  <p class="seed-hint" id="seedPassportHint">انقر على منطقة في الخريطة أو بلاطة محصول للاستكشاف</p>
+                </div>
+                <div class="panel-body seed-passport-body">
+                  <div class="seed-passport-total">
+                    <strong id="seedPassportTotal">517</strong>
+                    <span>إجمالي الاعتمادات</span>
+                  </div>
+                  <div class="seed-crop-list" id="seedCropList"></div>
+                </div>
+              </aside>
+              <div class="seed-side-stats">
+                <div class="seed-stat-card regions">
+                  <strong id="seedActiveRegions">10</strong>
+                  <span>مناطق نشطة</span>
+                </div>
+                <div class="seed-stat-card saudi">
+                  <strong id="seedSaudiFooter">342</strong>
+                  <span>اعتماد سعودي</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-explore">
+            <div class="seed-explore-head">
+              <span class="seed-explore-badge">استكشف البيانات</span>
+              <h3>رؤية شاملة لتوزيع البيانات الجينومية وجوازات البذور عبر المملكة العربية السعودية</h3>
+            </div>
+            <div class="seed-charts-layout">
+              <div class="seed-charts-side">
+                <article class="seed-chart-card">
+                  <header class="seed-chart-head">
+                    <h4>🌱 توزيع المحاصيل</h4>
+                    <p>الاعتمادات حسب نوع المحصول</p>
+                  </header>
+                  <div class="seed-donut-wrap" id="seedCropDistChart"></div>
+                </article>
+                <article class="seed-chart-card">
+                  <header class="seed-chart-head">
+                    <h4>📈 سعودي مقابل دولي</h4>
+                    <p>توزيع المنشأ لكل محصول</p>
+                  </header>
+                  <div class="seed-origin-chart" id="seedOriginChart"></div>
+                  <div class="seed-origin-legend">
+                    <span><i class="saudi"></i> سعودي</span>
+                    <span><i class="intl"></i> دولي</span>
+                  </div>
+                </article>
+              </div>
+              <article class="seed-chart-card seed-chart-regional">
+                <header class="seed-chart-head">
+                  <h4>🌐 نظرة إقليمية</h4>
+                  <p>الاعتمادات السعودية لكل منطقة</p>
+                </header>
+                <div class="seed-region-bars" id="seedRegionChart"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== تسجيل نبات ===== -->
+      <section class="view" id="view-plant-new" data-title="تسجيل نبات جديد" data-sub="إدخال بيانات النبات الأساسية والتصنيف العلمي — الباحث / الموظف">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل نبات جديد</h3>
+            <p>FR-01 · إضافة نبات مع التصنيف العلمي والحالة.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="navigate('plants')">قائمة النباتات</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-body">
+            <form id="plantForm" onsubmit="return submitPlant(event)">
+              <div class="grid-12">
+                <div class="form-group col-6">
+                  <label>اسم النبات *</label>
+                  <input class="form-control" name="PlantName" required placeholder="مثال: قمح صنف نجران" />
+                </div>
+                <div class="form-group col-6">
+                  <label>الاسم العلمي *</label>
+                  <input class="form-control" name="ScientificName" required placeholder="Triticum aestivum" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الاسم الشائع</label>
+                  <input class="form-control" name="CommonName" placeholder="قمح" />
+                </div>
+                <div class="form-group col-4">
+                  <label>النوع (Species)</label>
+                  <input class="form-control" name="Species" placeholder="aestivum" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الصنف (Variety)</label>
+                  <input class="form-control" name="Variety" placeholder="نجران" />
+                </div>
+                <div class="form-group col-8">
+                  <label>الوصف</label>
+                  <textarea class="form-control" name="Description" placeholder="وصف موجز للنبات وخصائصه..."></textarea>
+                </div>
+                <div class="form-group col-4">
+                  <label>الحالة</label>
+                  <select class="form-control" name="Status">
+                    <option>نشط</option>
+                    <option>قيد المراجعة</option>
+                    <option>مؤرشف</option>
+                  </select>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div style="display:flex;gap:10px;justify-content:flex-start">
+                <button type="submit" class="btn btn-primary">حفظ النبات</button>
+                <button type="reset" class="btn btn-outline">مسح الحقول</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== قائمة النباتات ===== -->
+      <section class="view" id="view-plants" data-title="إدارة النباتات" data-sub="البحث والتعديل حسب الاسم أو الاسم العلمي أو الصنف — FR-02 / FR-03">
+        <div class="page-head">
+          <div>
+            <h3>إدارة النباتات</h3>
+            <p>استعراض وتعديل بيانات النباتات والأصناف المسجّلة.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" data-roles="researcher,admin" onclick="navigate('plant-new')">+ تسجيل نبات جديد</button>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث</label>
+            <input class="form-control" placeholder="اسم النبات / علمي / صنف" id="plantSearch" oninput="filterTable('plantsTable', this.value)" />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>نشط</option>
+              <option>قيد المراجعة</option>
+              <option>مؤرشف</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="plantsTable">
+              <thead>
+                <tr>
+                  <th>PlantID</th>
+                  <th>اسم النبات</th>
+                  <th>الاسم العلمي</th>
+                  <th>الصنف</th>
+                  <th>الحالة</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="plantsTableBody">
+                <tr>
+                  <td>PLT-00142</td>
+                  <td>قمح صنف نجران</td>
+                  <td>Triticum aestivum</td>
+                  <td>نجران</td>
+                  <td><span class="badge badge-green">نشط</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00141</td>
+                  <td>تمر خلاص</td>
+                  <td>Phoenix dactylifera</td>
+                  <td>خلاص</td>
+                  <td><span class="badge badge-green">نشط</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00140</td>
+                  <td>شعير حولي</td>
+                  <td>Hordeum vulgare</td>
+                  <td>حولي</td>
+                  <td><span class="badge badge-amber">قيد المراجعة</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00138</td>
+                  <td>طماطم محلية</td>
+                  <td>Solanum lycopersicum</td>
+                  <td>جازان محلي</td>
+                  <td><span class="badge badge-gray">مؤرشف</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== نافذة تعديل نبات ===== -->
+      <div class="modal-overlay" id="plantEditModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(560px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>تعديل بيانات النبات</h4>
+              <p id="plantEditSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">—</p>
+            </div>
+            <button class="modal-close" onclick="closePlantEditModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="plantEditForm" onsubmit="return submitPlantEdit(event)">
+              <div class="form-group">
+                <label for="editPlantId">PlantID</label>
+                <input class="form-control" id="editPlantId" type="text" readonly dir="ltr" style="text-align:left;background:var(--canvas)" />
+              </div>
+              <div class="form-group">
+                <label for="editPlantName">اسم النبات *</label>
+                <input class="form-control" id="editPlantName" type="text" required placeholder="اسم النبات" />
+              </div>
+              <div class="form-group">
+                <label for="editScientificName">الاسم العلمي *</label>
+                <input class="form-control" id="editScientificName" type="text" required placeholder="Scientific name" dir="ltr" style="text-align:left" />
+              </div>
+              <div class="form-group">
+                <label for="editVariety">الصنف</label>
+                <input class="form-control" id="editVariety" type="text" placeholder="الصنف" />
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label for="editPlantStatus">الحالة *</label>
+                <select class="form-control" id="editPlantStatus" required>
+                  <option value="نشط">نشط</option>
+                  <option value="قيد المراجعة">قيد المراجعة</option>
+                  <option value="مؤرشف">مؤرشف</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closePlantEditModal()">تراجع</button>
+            <button type="submit" form="plantEditForm" class="btn btn-primary">حفظ التعديلات</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== تسجيل عينة ===== -->
+      <section class="view" id="view-sample-new" data-title="تسجيل عينة مرتبطة بنبات" data-sub="إصدار رقم عينة فريد وربطها بالنبات وبيانات الجمع الميداني">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل عينة جديدة</h3>
+            <p>FR-04 · FR-05 · FR-07 — إصدار كود فريد وربط العينة بالنبات الأصلي.</p>
+          </div>
+        </div>
+
+        <div class="status-flow">
+          <div class="status-step current"><span class="num">1</span> مسجّلة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">2</span> مستلمة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">3</span> قيد التحضير</div>
+          <div class="status-step"><span class="sep"></span><span class="num">4</span> قيد التحليل</div>
+          <div class="status-step"><span class="sep"></span><span class="num">5</span> مكتملة</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-body">
+            <form id="sampleForm" onsubmit="return submitSample(event)">
+              <div class="grid-12">
+                <div class="form-group col-4">
+                  <label>كود العينة (تلقائي)</label>
+                  <input class="form-control" id="sampleCodeInput" value="SMP-2026-0482" readonly style="background:#f8fafc;font-weight:700;color:var(--mewa-navy)" />
+                  <p class="help-text">يُصدر النظام رقماً فريداً تلقائياً</p>
+                </div>
+                <div class="form-group col-8">
+                  <label>النبات المرتبط *</label>
+                  <select class="form-control" id="samplePlantSelect" required>
+                    <option value="">اختر النبات...</option>
+                    <option value="قمح صنف نجران">PLT-00142 — قمح صنف نجران</option>
+                    <option value="تمر خلاص">PLT-00141 — تمر خلاص</option>
+                    <option value="شعير حولي">PLT-00140 — شعير حولي</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label>نوع العينة *</label>
+                  <select class="form-control" id="sampleTypeSelect" required>
+                    <option value="ورقة">ورقة</option>
+                    <option value="بذرة">بذرة</option>
+                    <option value="جذر">جذر</option>
+                    <option value="نسيج">نسيج</option>
+                    <option value="DNA مستخلص">DNA مستخلص</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label>تاريخ الجمع *</label>
+                  <input class="form-control" id="sampleDateInput" type="date" required value="2026-07-20" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الجامع / الباحث</label>
+                  <input class="form-control" id="sampleCollectorInput" value="أحمد السبيعي" />
+                </div>
+                <div class="form-group col-12">
+                  <label>موقع الجمع *</label>
+                  <input class="form-control" id="sampleLocationInput" required placeholder="المنطقة / المحافظة" />
+                </div>
+
+                <div class="form-group col-12">
+                  <label>تحديد موقع الجمع على الخريطة (اختياري)</label>
+                  <div class="map-picker">
+                    <div class="map-toolbar no-print">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="locateMe('sample')">📍 استخدام موقعي الحالي</button>
+                      <span class="help-text" style="margin:0">انقر على الخريطة أو حرّك العلامة لتحديد نقطة الجمع بدقة</span>
+                    </div>
+                    <div id="sampleMap" class="map-canvas"></div>
+                    <div class="map-coords">
+                      <div>
+                        <span class="meta-label">خط العرض (Lat)</span>
+                        <input class="form-control" id="sampleLat" readonly value="24.7136" />
+                      </div>
+                      <div>
+                        <span class="meta-label">خط الطول (Lng)</span>
+                        <input class="form-control" id="sampleLng" readonly value="46.6753" />
+                      </div>
+                      <div>
+                        <span class="meta-label">الإحداثيات (تُحفظ تلقائياً)</span>
+                        <input class="form-control" id="sampleCoords" readonly value="24.7136, 46.6753" style="font-weight:700;color:var(--mewa-navy)" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group col-12">
+                  <label>ملاحظات</label>
+                  <textarea class="form-control" placeholder="ملاحظات ميدانية حول العينة..."></textarea>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <button type="submit" class="btn btn-primary">تسجيل العينة</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== قائمة العينات ===== -->
+      <section class="view" id="view-samples" data-title="إدارة العينات" data-sub="متابعة حالة العينة عبر مراحلها المختلفة — FR-06">
+        <div class="page-head">
+          <div>
+            <h3>إدارة العينات</h3>
+            <p>تتبع الحالات: مسجّلة، مستلمة، قيد التحضير، قيد التحليل، مكتملة، مرفوضة، مؤرشفة.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" data-roles="researcher,admin" onclick="navigate('sample-new')">+ تسجيل عينة</button>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث بالكود / النبات</label>
+            <input class="form-control" oninput="filterTable('samplesTable', this.value)" placeholder="SMP-..." />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>مسجّلة</option>
+              <option>مستلمة</option>
+              <option>قيد التحضير</option>
+              <option>قيد التحليل</option>
+              <option>مكتملة</option>
+              <option>مرفوضة</option>
+              <option>مؤرشفة</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>المنطقة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>الرياض</option>
+              <option>القصيم</option>
+              <option>نجران</option>
+              <option>الأحساء</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="samplesTable">
+              <thead>
+                <tr>
+                  <th>كود العينة</th>
+                  <th>النبات</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                  <th>موقع الجمع</th>
+                  <th>تاريخ الجمع</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="samplesTableBody">
+                <tr>
+                  <td>SMP-2026-0481</td>
+                  <td>قمح صنف نجران</td>
+                  <td>بذرة</td>
+                  <td><span class="badge badge-amber">قيد التحليل</span></td>
+                  <td>نجران</td>
+                  <td>2026-07-12</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm" onclick="navigate('receive')">متابعة</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0480</td>
+                  <td>تمر خلاص</td>
+                  <td>ورقة</td>
+                  <td><span class="badge badge-blue">مستلمة</span></td>
+                  <td>الأحساء</td>
+                  <td>2026-07-11</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm" onclick="navigate('receive')">متابعة</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0479</td>
+                  <td>شعير حولي</td>
+                  <td>DNA مستخلص</td>
+                  <td><span class="badge badge-green">مكتملة</span></td>
+                  <td>القصيم</td>
+                  <td>2026-07-09</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm">عرض</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0475</td>
+                  <td>طماطم محلية</td>
+                  <td>نسيج</td>
+                  <td><span class="badge badge-red">مرفوضة</span></td>
+                  <td>جازان</td>
+                  <td>2026-07-05</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm">عرض</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== استلام ومراجعة العينة ===== -->
+      <section class="view" id="view-receive" data-title="استلام ومراجعة العينة" data-sub="فني المختبر — تحديث الحالة والتحقق من صلاحية العينة للتحليل">
+        <div class="page-head">
+          <div>
+            <h3>استلام ومراجعة العينة</h3>
+            <p>تحديث حالة العينة بعد الاستلام والتحقق من صلاحيتها قبل إسناد التحليل.</p>
+          </div>
+        </div>
+
+        <div class="status-flow">
+          <div class="status-step done"><span class="num">✓</span> مسجّلة</div>
+          <div class="status-step current"><span class="sep"></span><span class="num">2</span> مستلمة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">3</span> قيد التحضير</div>
+          <div class="status-step"><span class="sep"></span><span class="num">4</span> قيد التحليل</div>
+          <div class="status-step"><span class="sep"></span><span class="num">5</span> مكتملة</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header"><h4>بيانات العينة</h4></div>
+            <div class="panel-body">
+              <div class="grid-2" style="gap:12px;font-size:14px">
+                <div><span style="color:var(--muted);font-size:12px">الكود</span><br /><strong>SMP-2026-0480</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">النبات</span><br /><strong>تمر خلاص</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">نوع العينة</span><br /><strong>ورقة</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">موقع الجمع</span><br /><strong>الأحساء</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">تاريخ الجمع</span><br /><strong>2026-07-11</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">الجامع</span><br /><strong>نورة القحطاني</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h4>إجراء الاستلام / التحديث</h4></div>
+            <div class="panel-body">
+              <form onsubmit="return receiveSample(event)">
+                <div class="form-group">
+                  <label>الحالة الجديدة *</label>
+                  <select class="form-control" required>
+                    <option>مستلمة</option>
+                    <option>قيد التحضير</option>
+                    <option>قيد التحليل</option>
+                    <option>مرفوضة</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>نتيجة مراجعة الصلاحية</label>
+                  <select class="form-control">
+                    <option>صالحة للتحليل</option>
+                    <option>تحتاج إعادة جمع</option>
+                    <option>تالفة / مرفوضة</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>ملاحظات الفني</label>
+                  <textarea class="form-control" placeholder="ملاحظات الاستلام والجودة..."></textarea>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button type="submit" class="btn btn-primary">حفظ التحديث</button>
+                  <button type="button" class="btn btn-outline" onclick="navigate('analysis')">إسناد تحليل</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h4>طابور العينات بانتظار الاستلام</h4></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>الكود</th><th>النبات</th><th>الحالة</th><th>تاريخ الوصول</th><th>إجراء</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SMP-2026-0483</td>
+                  <td>قمح صنف نجران</td>
+                  <td><span class="badge badge-purple">مسجّلة</span></td>
+                  <td>2026-07-20</td>
+                  <td><button class="btn btn-sm btn-primary" onclick="toast('تم استلام العينة','success')">استلام</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0484</td>
+                  <td>شعير حولي</td>
+                  <td><span class="badge badge-purple">مسجّلة</span></td>
+                  <td>2026-07-20</td>
+                  <td><button class="btn btn-sm btn-primary" onclick="toast('تم استلام العينة','success')">استلام</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== تحليل جينومي ===== -->
+      <section class="view" id="view-analysis" data-title="تسجيل تحليل جينومي ونتائج وملفات" data-sub="فني المختبر — نوع التحليل، النتائج، ورفع الملفات الجينومية">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل تحليل جينومي</h3>
+            <p>FR-08 إلى FR-14 — تسجيل التحليل، إدخال النتائج، ورفع الملفات مع إدارة الإصدارات.</p>
+          </div>
+        </div>
+
+        <div class="tabs no-print">
+          <button class="tab active" data-tab="tab-analysis">بيانات التحليل</button>
+          <button class="tab" data-tab="tab-results">النتائج</button>
+          <button class="tab" data-tab="tab-files">الملفات الجينومية</button>
+        </div>
+
+        <div id="tab-analysis" class="tab-pane">
+          <div class="panel">
+            <div class="panel-body">
+              <form onsubmit="return saveAnalysis(event)">
+                <div class="grid-12">
+                  <div class="form-group col-6">
+                    <label>العينة المرتبطة *</label>
+                    <select class="form-control" required>
+                      <option>SMP-2026-0480 — تمر خلاص</option>
+                      <option>SMP-2026-0481 — قمح صنف نجران</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-6">
+                    <label>نوع التحليل *</label>
+                    <select class="form-control" required>
+                      <option>Whole Genome Sequencing</option>
+                      <option>DNA Barcoding</option>
+                      <option>SNP Analysis</option>
+                      <option>RNA Sequencing</option>
+                      <option>Marker Analysis</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-4">
+                    <label>اسم المختبر</label>
+                    <input class="form-control" value="مختبر الجينوم النباتي — الرياض" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>تاريخ التنفيذ</label>
+                    <input class="form-control" type="date" value="2026-07-20" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>المنفَّذ بواسطة</label>
+                    <input class="form-control" value="فهد العتيبي" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>حالة التحليل</label>
+                    <input class="form-control" value="قيد التنفيذ" readonly style="background:#f8fafc;font-weight:700;color:var(--mewa-navy)" />
+                    <p class="help-text">تُحدَّث الحالة تلقائياً حسب مراحل التنفيذ والاعتماد</p>
+                  </div>
+                  <div class="form-group col-8">
+                    <label>ملخص النتيجة</label>
+                    <textarea class="form-control" placeholder="ملخص موجز لنتيجة التحليل..."></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ بيانات التحليل</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-results" class="tab-pane" style="display:none">
+          <div class="panel">
+            <div class="panel-header">
+              <h4>نتائج التحليل (AnalysisResult)</h4>
+              <button class="btn btn-sm btn-outline" onclick="addResultRow()">+ إضافة نتيجة</button>
+            </div>
+            <div class="panel-body">
+              <div class="grid-12">
+                <div class="form-group col-6">
+                  <label>وصف النتيجة</label>
+                  <input class="form-control" id="resultDescInput" placeholder="مثال: نسبة تغطية التسلسل" />
+                </div>
+                <div class="form-group col-3">
+                  <label>قيمة النتيجة</label>
+                  <input class="form-control" id="resultValueInput" placeholder="98.4%" />
+                </div>
+                <div class="form-group col-3">
+                  <label>تاريخ النتيجة</label>
+                  <input class="form-control" id="resultDateInput" type="date" value="2026-07-20" />
+                </div>
+              </div>
+              <div class="table-wrap" style="margin-top:12px">
+                <table class="data">
+                  <thead>
+                    <tr><th>ResultID</th><th>الوصف</th><th>القيمة</th><th>التاريخ</th><th>الاعتماد</th></tr>
+                  </thead>
+                  <tbody id="resultsTableBody">
+                    <tr>
+                      <td>RES-9021</td>
+                      <td>تغطية التسلسل (Coverage)</td>
+                      <td>98.4%</td>
+                      <td>2026-07-18</td>
+                      <td><span class="badge badge-amber">بانتظار الاعتماد</span></td>
+                    </tr>
+                    <tr>
+                      <td>RES-9020</td>
+                      <td>جودة القراءة (Q30)</td>
+                      <td>92.1%</td>
+                      <td>2026-07-18</td>
+                      <td><span class="badge badge-amber">بانتظار الاعتماد</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-files" class="tab-pane" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>الملفات الجينومية</h4></div>
+            <div class="panel-body">
+              <div class="upload-zone" onclick="toast('محاكاة رفع ملف جينومي','success')">
+                <div style="font-size:28px">⬆</div>
+                <strong>اسحب الملفات هنا أو انقر للرفع</strong>
+                <p>الأنواع المدعومة: FASTA · FASTQ · VCF · BAM · CSV · Excel · PDF · صور</p>
+              </div>
+              <div class="file-list">
+                <div class="file-row">
+                  <div class="left">
+                    <div class="file-ico">FQ</div>
+                    <div>
+                      <strong>sample_0480_R1.fastq.gz</strong>
+                      <div style="font-size:12px;color:var(--muted)">1.2 GB · رُفع 2026-07-18 · الإصدار v2</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-sm btn-outline" onclick="toast('بدء التحميل','success')">تحميل</button>
+                    <button class="btn btn-sm btn-ghost">إصدارات</button>
+                  </div>
+                </div>
+                <div class="file-row">
+                  <div class="left">
+                    <div class="file-ico">VCF</div>
+                    <div>
+                      <strong>variants_0480.vcf</strong>
+                      <div style="font-size:12px;color:var(--muted)">48 MB · رُفع 2026-07-18 · الإصدار v1</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-sm btn-outline">تحميل</button>
+                    <button class="btn btn-sm btn-ghost">إصدارات</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== لوحة الاعتماد ===== -->
+      <section class="view" id="view-approval" data-title="لوحة المراجعة والاعتماد" data-sub="مدير المختبر — مراجعة واعتماد أو رفض النتائج قبل النشر">
+        <div class="page-head">
+          <div>
+            <h3>لوحة المراجعة والاعتماد</h3>
+            <p>FR-11 — التحكم في اعتماد النتائج قبل إتاحتها للبحث والتقارير.</p>
+          </div>
+          <span class="badge badge-amber" id="pendingCountBadge">3 بانتظار الاعتماد</span>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث</label>
+            <input class="form-control" placeholder="رقم التحليل / العينة / النبات" oninput="filterTable('approvalTable', this.value)" />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control" onchange="filterApprovalStatus(this.value)">
+              <option value="">الكل</option>
+              <option value="بانتظار الاعتماد">بانتظار الاعتماد</option>
+              <option value="معتمد">معتمد</option>
+              <option value="مرفوض">مرفوض</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="approvalTable">
+              <thead>
+                <tr>
+                  <th>رقم التحليل</th>
+                  <th>نوع التحليل</th>
+                  <th>العينة</th>
+                  <th>النبات / الصنف</th>
+                  <th>المنفَّذ بواسطة</th>
+                  <th>تاريخ التنفيذ</th>
+                  <th>الملفات</th>
+                  <th>الحالة</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3310</td>
+                  <td>Whole Genome Sequencing</td>
+                  <td>SMP-2026-0480</td>
+                  <td>تمر خلاص</td>
+                  <td>فهد العتيبي</td>
+                  <td>2026-07-18</td>
+                  <td>2</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3310"
+                      data-type="Whole Genome Sequencing"
+                      data-sample="SMP-2026-0480"
+                      data-plant="تمر خلاص"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="فهد العتيبي"
+                      data-date="2026-07-18"
+                      data-files="2"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تغطية تسلسل 98.4% · جودة Q30 = 92.1% · لم تُرصد شذوذات جوهرية في مؤشرات الجودة."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3308</td>
+                  <td>DNA Barcoding</td>
+                  <td>SMP-2026-0479</td>
+                  <td>شعير حولي</td>
+                  <td>سارة الدوسري</td>
+                  <td>2026-07-17</td>
+                  <td>1</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3308"
+                      data-type="DNA Barcoding"
+                      data-sample="SMP-2026-0479"
+                      data-plant="شعير حولي"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="سارة الدوسري"
+                      data-date="2026-07-17"
+                      data-files="1"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تطابق الباركود مع المرجع بنسبة 99.2% · الصنف مؤكد."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3305</td>
+                  <td>SNP Analysis</td>
+                  <td>SMP-2026-0481</td>
+                  <td>قمح صنف نجران</td>
+                  <td>فهد العتيبي</td>
+                  <td>2026-07-16</td>
+                  <td>0</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3305"
+                      data-type="SNP Analysis"
+                      data-sample="SMP-2026-0481"
+                      data-plant="قمح صنف نجران"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="فهد العتيبي"
+                      data-date="2026-07-16"
+                      data-files="0"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تحديد 1,248 موقع SNP مرتبط بتحمل الجفاف — يحتاج مراجعة منهجية قبل النشر."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="معتمد">
+                  <td>ANL-3299</td>
+                  <td>Marker Analysis</td>
+                  <td>SMP-2026-0460</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>2026-07-14</td>
+                  <td>1</td>
+                  <td><span class="badge badge-green" data-status-badge>معتمد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3299"
+                      data-type="Marker Analysis"
+                      data-sample="SMP-2026-0460"
+                      data-plant="—"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="—"
+                      data-date="2026-07-10"
+                      data-files="1"
+                      data-status="معتمد"
+                      data-summary="نتائج معتمدة ومتاحة للبحث والتقارير."
+                      data-approved-by="د. هند المطيري"
+                      data-approval-date="2026-07-14"
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== نافذة تفاصيل الاعتماد ===== -->
+      <div class="modal-overlay" id="approvalModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header">
+            <div>
+              <h4>تفاصيل طلب الاعتماد — <span id="modalAnalysisId">—</span></h4>
+              <p id="modalStatusLine" style="font-size:12.5px;color:var(--muted);margin-top:2px"></p>
+            </div>
+            <button class="modal-close" onclick="closeApprovalModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="grid-2" style="gap:14px 20px">
+              <div><span class="meta-label">نوع التحليل</span><strong id="modalType">—</strong></div>
+              <div><span class="meta-label">حالة التحليل</span><span id="modalStatusBadge" class="badge">—</span></div>
+              <div><span class="meta-label">رقم العينة</span><strong id="modalSample">—</strong></div>
+              <div><span class="meta-label">النبات / الصنف</span><strong id="modalPlant">—</strong></div>
+              <div><span class="meta-label">اسم المختبر</span><strong id="modalLab">—</strong></div>
+              <div><span class="meta-label">المنفَّذ بواسطة</span><strong id="modalPerformer">—</strong></div>
+              <div><span class="meta-label">تاريخ التنفيذ</span><strong id="modalDate">—</strong></div>
+              <div><span class="meta-label">عدد الملفات المرفقة</span><strong id="modalFiles">—</strong></div>
+            </div>
+            <div class="divider"></div>
+            <div>
+              <span class="meta-label">ملخص النتيجة</span>
+              <p id="modalSummary" style="margin-top:6px;font-size:13.5px;color:var(--ink-2);line-height:1.7">—</p>
+            </div>
+            <div id="modalApprovalInfo" style="display:none;margin-top:14px">
+              <div class="grid-2" style="gap:14px 20px">
+                <div><span class="meta-label">اعتمد بواسطة</span><strong id="modalApprovedBy">—</strong></div>
+                <div><span class="meta-label">تاريخ الاعتماد</span><strong id="modalApprovalDate">—</strong></div>
+              </div>
+            </div>
+            <div id="modalRejectionInfo" style="display:none;margin-top:14px;padding:12px 14px;background:#fef3f2;border:1px solid #fecdca;border-radius:var(--radius-sm)">
+              <div class="grid-2" style="gap:14px 20px">
+                <div><span class="meta-label">سبب الرفض</span><strong id="modalRejectReason" style="color:var(--danger)">—</strong></div>
+                <div><span class="meta-label">تاريخ الرفض</span><strong id="modalRejectDate">—</strong></div>
+              </div>
+              <div style="margin-top:10px">
+                <span class="meta-label">ملاحظات الرفض</span>
+                <p id="modalRejectNotes" style="font-size:13px;color:var(--ink-2);margin-top:4px">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" id="modalActions">
+            <button class="btn btn-outline" onclick="closeApprovalModal()">إغلاق</button>
+            <button class="btn btn-danger" id="modalRejectBtn" onclick="openRejectReasonModal()">رفض مع ملاحظات</button>
+            <button class="btn btn-primary" id="modalApproveBtn" onclick="approveFromModal()">اعتماد ونشر</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة إدخال أسباب الرفض ===== -->
+      <div class="modal-overlay" id="rejectReasonOverlay" style="z-index:300">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(520px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>رفض نتائج التحليل</h4>
+              <p id="rejectContextLine" style="font-size:12.5px;color:var(--muted);margin-top:2px">—</p>
+            </div>
+            <button class="modal-close" onclick="closeRejectReasonModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="rejectReasonForm" onsubmit="return confirmReject(event)">
+              <div class="form-group">
+                <label>سبب الرفض الرئيسي *</label>
+                <select class="form-control" id="rejectReasonSelect" required>
+                  <option value="">اختر السبب...</option>
+                  <option>بيانات أو نتائج غير مكتملة</option>
+                  <option>جودة التسلسل / التحليل غير كافية</option>
+                  <option>عدم تطابق الملفات المرفقة مع النتائج</option>
+                  <option>يتطلب إعادة التحليل من المختبر</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>تفاصيل وملاحظات الرفض *</label>
+                <textarea class="form-control" id="rejectReasonNotes" rows="4" required placeholder="اكتب تفاصيل سبب الرفض ليطّلع عليها الفني المسؤول..."></textarea>
+                <p class="help-text">ستُرسل هذه الملاحظات إلى الفني المنفّذ لإعادة المراجعة والتصحيح.</p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeRejectReasonModal()">تراجع</button>
+            <button type="submit" form="rejectReasonForm" class="btn btn-danger">تأكيد الرفض</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة إضافة / تعديل مستخدم ===== -->
+      <div class="modal-overlay" id="userModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(520px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4 id="userModalTitle">إضافة مستخدم</h4>
+              <p id="userModalSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">أدخل بيانات الحساب وحدّد الدور والحالة.</p>
+            </div>
+            <button class="modal-close" onclick="closeUserModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="userForm" onsubmit="return submitUserForm(event)">
+              <div class="form-group">
+                <label for="userNameInput">الاسم *</label>
+                <input class="form-control" id="userNameInput" type="text" required placeholder="الاسم الكامل" />
+              </div>
+              <div class="form-group">
+                <label for="userUsernameInput">اسم المستخدم *</label>
+                <input class="form-control" id="userUsernameInput" type="text" required placeholder="مثال: a.subaie" dir="ltr" style="text-align:left" />
+              </div>
+              <div class="form-group">
+                <label for="userRoleSelect">الدور *</label>
+                <select class="form-control" id="userRoleSelect" required>
+                  <option value="">اختر الدور...</option>
+                  <option value="researcher">الباحث / الموظف</option>
+                  <option value="technician">فني المختبر</option>
+                  <option value="manager">مدير المختبر</option>
+                  <option value="admin">مسؤول النظام</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label for="userStatusSelect">الحالة *</label>
+                <select class="form-control" id="userStatusSelect" required>
+                  <option value="نشط">نشط</option>
+                  <option value="معطّل">معطّل</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeUserModal()">تراجع</button>
+            <button type="submit" form="userForm" class="btn btn-primary">حفظ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة تعديل صلاحيات الأدوار ===== -->
+      <div class="modal-overlay" id="rolePermsModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(560px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>تعديل صلاحيات الأدوار</h4>
+              <p id="rolePermsSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">امنح أو امنع الصلاحيات للدور المحدد.</p>
+            </div>
+            <button class="modal-close" onclick="closeRolePermsModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="rolePermsForm" onsubmit="return submitRolePermsForm(event)">
+              <div class="form-group">
+                <label for="rolePermsRoleSelect">الدور *</label>
+                <select class="form-control" id="rolePermsRoleSelect" required onchange="loadRolePermsChecks()">
+                  <option value="admin">مسؤول النظام</option>
+                  <option value="researcher">الباحث / الموظف</option>
+                  <option value="technician">فني المختبر</option>
+                  <option value="manager">مدير المختبر</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>الصلاحيات</label>
+                <p class="help-text" style="margin-top:0;margin-bottom:10px">الصلاحيات كما في العمود الأول من مصفوفة الصلاحيات — فعّل لمنح أو عطّل لمنع.</p>
+                <div class="perm-list" id="rolePermsList"></div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeRolePermsModal()">تراجع</button>
+            <button type="submit" form="rolePermsForm" class="btn btn-primary">حفظ الصلاحيات</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== إدارة المستخدمين ===== -->
+      <section class="view" id="view-users" data-title="إدارة المستخدمين والصلاحيات" data-sub="مسؤول النظام — إضافة المستخدمين وتحديد أدوارهم">
+        <div class="page-head">
+          <div>
+            <h3>إدارة المستخدمين والصلاحيات</h3>
+            <p>إدارة الحسابات والأدوار والقوائم المرجعية والإشراف العام.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ إضافة مستخدم</button>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><div class="label">إجمالي المستخدمين</div><div class="value" id="kpiUsersTotal">—</div></div>
+          <div class="kpi navy"><div class="label">باحثون / موظفون</div><div class="value" id="kpiUsersResearchers">—</div></div>
+          <div class="kpi info"><div class="label">فنيو مختبر</div><div class="value" id="kpiUsersTechnicians">—</div></div>
+          <div class="kpi warn"><div class="label">مديرو مختبر</div><div class="value" id="kpiUsersManagers">—</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h4>المستخدمون</h4>
+            <input class="form-control" style="max-width:220px;height:36px" placeholder="بحث بالاسم..." oninput="filterTable('usersTable', this.value)" />
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="usersTable">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>اسم المستخدم</th>
+                  <th>الدور</th>
+                  <th>الحالة</th>
+                  <th>آخر دخول</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h4>مصفوفة الصلاحيات حسب الدور</h4>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openRolePermsModal()">تعديل صلاحيات الأدوار</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="permissionsMatrixTable">
+              <thead>
+                <tr>
+                  <th>الصلاحية</th>
+                  <th>مسؤول النظام</th>
+                  <th>الباحث / الموظف</th>
+                  <th>فني المختبر</th>
+                  <th>مدير المختبر</th>
+                </tr>
+              </thead>
+              <tbody id="permissionsMatrixBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== التقارير ===== -->
+      <section class="view" id="view-reports" data-title="التقارير ولوحة المؤشرات" data-sub="تقارير العينات والتحاليل والملفات والمناطق — حسب صلاحية الدور">
+        <div class="page-head">
+          <div>
+            <h3>التقارير الرئيسية</h3>
+            <p>FR-15 إلى FR-18 — استخراج وتصدير التقارير التشغيلية.</p>
+          </div>
+          <div class="no-print" style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" onclick="toast('تصدير Excel','success')">تصدير Excel</button>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">طباعة / PDF</button>
+          </div>
+        </div>
+
+        <div class="tabs no-print" id="reportTabs">
+          <button class="tab active" data-report="r-samples">تقرير العينات</button>
+          <button class="tab" data-report="r-analyses">تقرير التحاليل</button>
+          <button class="tab" data-report="r-files">تقرير الملفات الجينومية</button>
+          <button class="tab" data-report="r-geo">حسب المنطقة</button>
+          <button class="tab" data-report="r-approval">المعتمدة / غير المعتمدة</button>
+        </div>
+
+        <div class="filters no-print">
+          <div class="form-group">
+            <label>من تاريخ</label>
+            <input class="form-control" type="date" value="2026-01-01" />
+          </div>
+          <div class="form-group">
+            <label>إلى تاريخ</label>
+            <input class="form-control" type="date" value="2026-07-20" />
+          </div>
+          <div class="form-group">
+            <label>النبات / الصنف</label>
+            <select class="form-control"><option>الكل</option><option>قمح</option><option>تمر</option><option>شعير</option></select>
+          </div>
+          <div class="form-group" style="flex:0">
+            <label>&nbsp;</label>
+            <button class="btn btn-navy" onclick="toast('تم تطبيق عوامل التصفية','success')">تطبيق</button>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-samples">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير العينات — رقم العينة، اسم النبات، الحالة، موقع الجمع، تاريخ الجمع</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>رقم العينة</th><th>اسم النبات</th><th>الحالة</th><th>موقع الجمع</th><th>تاريخ الجمع</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SMP-2026-0481</td><td>قمح صنف نجران</td><td>قيد التحليل</td><td>نجران</td><td>2026-07-12</td></tr>
+                  <tr><td>SMP-2026-0480</td><td>تمر خلاص</td><td>مستلمة</td><td>الأحساء</td><td>2026-07-11</td></tr>
+                  <tr><td>SMP-2026-0479</td><td>شعير حولي</td><td>مكتملة</td><td>القصيم</td><td>2026-07-09</td></tr>
+                  <tr><td>SMP-2026-0478</td><td>طماطم محلية</td><td>مؤرشفة</td><td>جازان</td><td>2026-07-08</td></tr>
+                  <tr><td>SMP-2026-0477</td><td>قمح صنف نجران</td><td>مكتملة</td><td>عسير</td><td>2026-07-06</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-analyses" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير التحاليل — النوع، المختبر، الحالة، تاريخ التنفيذ</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>AnalysisID</th><th>نوع التحليل</th><th>المختبر</th><th>حالة التحليل</th><th>تاريخ التنفيذ</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>ANL-3310</td><td>Whole Genome Sequencing</td><td>مختبر الجينوم — الرياض</td><td>بانتظار الاعتماد</td><td>2026-07-18</td></tr>
+                  <tr><td>ANL-3308</td><td>DNA Barcoding</td><td>مختبر الجينوم — الرياض</td><td>معتمد</td><td>2026-07-17</td></tr>
+                  <tr><td>ANL-3305</td><td>SNP Analysis</td><td>مختبر الجينوم — الرياض</td><td>قيد التنفيذ</td><td>2026-07-16</td></tr>
+                  <tr><td>ANL-3299</td><td>RNA Sequencing</td><td>مختبر الجينوم — الرياض</td><td>معتمد</td><td>2026-07-10</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-files" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير الملفات الجينومية — الاسم، النوع، تاريخ الرفع</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>FileID</th><th>اسم الملف</th><th>نوع الملف</th><th>الحجم</th><th>تاريخ الرفع</th><th>بواسطة</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>FIL-8801</td><td>sample_0480_R1.fastq.gz</td><td>FASTQ</td><td>1.2 GB</td><td>2026-07-18</td><td>فهد العتيبي</td></tr>
+                  <tr><td>FIL-8800</td><td>variants_0480.vcf</td><td>VCF</td><td>48 MB</td><td>2026-07-18</td><td>فهد العتيبي</td></tr>
+                  <tr><td>FIL-8795</td><td>barcode_0479.fasta</td><td>FASTA</td><td>2.1 MB</td><td>2026-07-17</td><td>سارة الدوسري</td></tr>
+                  <tr><td>FIL-8788</td><td>report_0460.pdf</td><td>PDF</td><td>1.4 MB</td><td>2026-07-14</td><td>فهد العتيبي</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-geo" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير العينات حسب المنطقة الجغرافية</h4></div>
+            <div class="panel-body">
+              <div class="chart-bars" style="height:200px">
+                <div class="bar-wrap"><div class="bar" style="height:85%"></div><span>الرياض<br/>214</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:70%"></div><span>القصيم<br/>176</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:60%"></div><span>عسير<br/>148</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:52%"></div><span>جازان<br/>130</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:45%"></div><span>حائل<br/>112</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:38%"></div><span>تبوك<br/>96</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:30%"></div><span>أخرى<br/>160</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-approval" style="display:none">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><h4>النتائج المعتمدة</h4></div>
+              <div class="table-wrap">
+                <table class="data">
+                  <thead><tr><th>النتيجة</th><th>العينة</th><th>المعتمِد</th><th>التاريخ</th></tr></thead>
+                  <tbody>
+                    <tr><td>RES-9010</td><td>SMP-2026-0460</td><td>د. هند المطيري</td><td>2026-07-14</td></tr>
+                    <tr><td>RES-9005</td><td>SMP-2026-0455</td><td>د. هند المطيري</td><td>2026-07-12</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h4>غير المعتمدة / المرفوضة</h4></div>
+              <div class="table-wrap">
+                <table class="data">
+                  <thead><tr><th>النتيجة</th><th>العينة</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+                  <tbody>
+                    <tr><td>RES-9021</td><td>SMP-2026-0480</td><td><span class="badge badge-amber">بانتظار</span></td><td>2026-07-18</td></tr>
+                    <tr><td>RES-8990</td><td>SMP-2026-0440</td><td><span class="badge badge-red">مرفوضة</span></td><td>2026-07-08</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== سجل التدقيق ===== -->
+      <section class="view" id="view-audit" data-title="سجل التدقيق" data-sub="Audit Trail — تاريخ كامل لجميع العمليات">
+        <div class="page-head">
+          <div>
+            <h3>سجل التدقيق (Audit Trail)</h3>
+            <p>تتبع كل عملية إدخال أو تعديل أو اعتماد أو رفع ملفات.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>الوقت</th><th>المستخدم</th><th>الدور</th><th>العملية</th><th>الكيان</th><th>التفاصيل</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>2026-07-20 09:14</td><td>f.otaibi</td><td>فني مختبر</td><td>رفع ملف</td><td>FIL-8801</td><td>sample_0480_R1.fastq.gz</td></tr>
+                <tr><td>2026-07-20 08:55</td><td>a.subaie</td><td>باحث</td><td>تسجيل عينة</td><td>SMP-2026-0482</td><td>ربط بـ PLT-00142</td></tr>
+                <tr><td>2026-07-19 16:40</td><td>h.mutairi</td><td>مدير مختبر</td><td>اعتماد نتيجة</td><td>RES-9010</td><td>تم النشر للبحث</td></tr>
+                <tr><td>2026-07-19 11:02</td><td>k.admin</td><td>مسؤول النظام</td><td>تعديل صلاحية</td><td>USER-018</td><td>ترقية إلى فني مختبر</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* PGDMS — Role-based navigation & interactions */
+
+const ROLES = {
+  researcher: {
+    label: "الباحث / الموظف",
+    short: "باحث",
+    name: "أحمد السبيعي",
+    avatar: "أح",
+    home: "dashboard",
+    nav: [
+      { section: "الرئيسية" },
+      { id: "dashboard", label: "لوحة المؤشرات", icon: "📊" },
+      { section: "البيانات النباتية" },
+      { id: "plants", label: "إدارة النباتات", icon: "🌿" },
+      { id: "plant-new", label: "تسجيل نبات جديد", icon: "＋" },
+      { id: "samples", label: "إدارة العينات", icon: "🧪" },
+      { id: "sample-new", label: "تسجيل عينة", icon: "＋" },
+      { section: "التقارير" },
+      { id: "reports", label: "التقارير والإحصائيات", icon: "📑" },
+    ],
+  },
+  technician: {
+    label: "فني المختبر",
+    short: "فني مختبر",
+    name: "فهد العتيبي",
+    avatar: "فه",
+    home: "dashboard",
+    nav: [
+      { section: "الرئيسية" },
+      { id: "dashboard", label: "لوحة المؤشرات", icon: "📊" },
+      { section: "عمليات المختبر" },
+      { id: "receive", label: "استلام ومراجعة العينات", icon: "📥" },
+      { id: "samples", label: "متابعة العينات", icon: "🧪" },
+      { id: "analysis", label: "التحاليل والنتائج والملفات", icon: "🔬" },
+      { section: "التقارير" },
+      { id: "reports", label: "تقارير محدودة", icon: "📑" },
+    ],
+  },
+  manager: {
+    label: "مدير المختبر",
+    short: "مدير مختبر",
+    name: "د. هند المطيري",
+    avatar: "هن",
+    home: "approval",
+    nav: [
+      { section: "الرئيسية" },
+      { id: "dashboard", label: "لوحة المؤشرات", icon: "📊" },
+      { id: "approval", label: "المراجعة والاعتماد", icon: "✅" },
+      { section: "الاستعلام" },
+      { id: "plants", label: "استعراض النباتات", icon: "🌿" },
+      { id: "samples", label: "استعراض العينات", icon: "🧪" },
+      { section: "التقارير" },
+      { id: "reports", label: "التقارير والإحصائيات", icon: "📑" },
+      { id: "audit", label: "سجل التدقيق", icon: "📝" },
+    ],
+  },
+  admin: {
+    label: "مسؤول النظام",
+    short: "مسؤول النظام",
+    name: "خالد الإداري",
+    avatar: "خا",
+    home: "dashboard",
+    nav: [
+      { section: "الرئيسية" },
+      { id: "dashboard", label: "لوحة المؤشرات", icon: "📊" },
+      { section: "الإشراف" },
+      { id: "users", label: "المستخدمون والصلاحيات", icon: "👥" },
+      { id: "audit", label: "سجل التدقيق", icon: "📝" },
+      { section: "البيانات" },
+      { id: "plants", label: "إدارة النباتات", icon: "🌿" },
+      { id: "samples", label: "إدارة العينات", icon: "🧪" },
+      { id: "approval", label: "المراجعة والاعتماد", icon: "✅" },
+      { section: "التقارير" },
+      { id: "reports", label: "التقارير والإحصائيات", icon: "📑" },
+    ],
+  },
+};
+
+let currentRole = sessionStorage.getItem("pgdms_role") || "researcher";
+let currentView = null;
+
+function init() {
+
+  const role = ROLES[currentRole] || ROLES.researcher;
+  document.getElementById("userName").textContent = role.name;
+  document.getElementById("userRoleLabel").textContent = role.label;
+  document.getElementById("userAvatar").textContent = role.avatar;
+  document.getElementById("roleChip").textContent = role.label;
+
+  renderNav(role);
+  navigate(role.home);
+  bindTabs();
+  bindReportTabs();
+  bindMobile();
+  bindApprovalModal();
+  renderUsersTable();
+  renderPermissionsMatrix();
+  applyRoleVisibility();
+  updatePendingCount();
+  if (currentRole === "admin") initSeedDashboard();
+}
+
+function bindApprovalModal() {
+  const overlay = document.getElementById("approvalModalOverlay");
+  overlay?.addEventListener("click", (e) => {
+    if (e.target === overlay) closeApprovalModal();
+  });
+
+  const rejectOverlay = document.getElementById("rejectReasonOverlay");
+  rejectOverlay?.addEventListener("click", (e) => {
+    if (e.target === rejectOverlay) closeRejectReasonModal();
+  });
+
+  const userOverlay = document.getElementById("userModalOverlay");
+  userOverlay?.addEventListener("click", (e) => {
+    if (e.target === userOverlay) closeUserModal();
+  });
+
+  const rolePermsOverlay = document.getElementById("rolePermsModalOverlay");
+  rolePermsOverlay?.addEventListener("click", (e) => {
+    if (e.target === rolePermsOverlay) closeRolePermsModal();
+  });
+
+  const plantEditOverlay = document.getElementById("plantEditModalOverlay");
+  plantEditOverlay?.addEventListener("click", (e) => {
+    if (e.target === plantEditOverlay) closePlantEditModal();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".edit-menu")) closeAllEditMenus();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (rejectOverlay?.classList.contains("show")) {
+      closeRejectReasonModal();
+    } else if (rolePermsOverlay?.classList.contains("show")) {
+      closeRolePermsModal();
+    } else if (userOverlay?.classList.contains("show")) {
+      closeUserModal();
+    } else if (plantEditOverlay?.classList.contains("show")) {
+      closePlantEditModal();
+    } else if (overlay?.classList.contains("show")) {
+      closeApprovalModal();
+    } else {
+      closeAllEditMenus();
+    }
+  });
+}
+
+function renderNav(role) {
+  const nav = document.getElementById("sidebarNav");
+  nav.innerHTML = "";
+  role.nav.forEach((item) => {
+    if (item.section) {
+      const s = document.createElement("div");
+      s.className = "nav-section";
+      s.textContent = item.section;
+      nav.appendChild(s);
+      return;
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "nav-item";
+    btn.dataset.view = item.id;
+    btn.innerHTML = `<span class="ni">${item.icon}</span><span>${item.label}</span>`;
+    btn.addEventListener("click", () => {
+      navigate(item.id);
+      closeSidebar();
+    });
+    nav.appendChild(btn);
+  });
+}
+
+function navigate(viewId) {
+  const view = document.getElementById(`view-${viewId}`);
+  if (!view) return;
+
+  document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+  view.classList.add("active");
+  currentView = viewId;
+
+  document.getElementById("pageTitle").textContent = view.dataset.title || "";
+  document.getElementById("pageSubtitle").textContent = view.dataset.sub || "";
+
+  document.querySelectorAll(".nav-item").forEach((n) => {
+    n.classList.toggle("active", n.dataset.view === viewId);
+  });
+
+  if (viewId === "sample-new") {
+    setTimeout(initSampleMap, 50);
+  }
+
+  if (viewId === "dashboard" && currentRole === "admin") {
+    const dash = document.getElementById("view-dashboard");
+    if (dash) {
+      dash.dataset.title = "لوحة المؤشرات — مركز بيانات البذور";
+      dash.dataset.sub = "توزيع الاعتمادات والبيانات الجينومية عبر المناطق السعودية";
+      document.getElementById("pageTitle").textContent = dash.dataset.title;
+      document.getElementById("pageSubtitle").textContent = dash.dataset.sub;
+    }
+    setTimeout(() => {
+      initSeedDashboard();
+      if (seedMap) seedMap.invalidateSize();
+    }, 80);
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function applyRoleVisibility() {
+  document.querySelectorAll("[data-roles]").forEach((el) => {
+    const allowed = el.dataset.roles.split(",").map((s) => s.trim());
+    el.style.display = allowed.includes(currentRole) ? "" : "none";
+  });
+}
+
+function bindTabs() {
+  document.querySelectorAll(".tabs").forEach((tabs) => {
+    if (tabs.id === "reportTabs") return;
+    tabs.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const paneId = tab.dataset.tab;
+        if (!paneId) return;
+        const parent = tabs.parentElement;
+        tabs.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        parent.querySelectorAll(".tab-pane").forEach((p) => {
+          p.style.display = p.id === paneId ? "block" : "none";
+        });
+      });
+    });
+  });
+}
+
+function bindReportTabs() {
+  const tabs = document.getElementById("reportTabs");
+  if (!tabs) return;
+  tabs.querySelectorAll(".tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      const id = tab.dataset.report;
+      document.querySelectorAll(".report-pane").forEach((p) => {
+        p.style.display = p.id === id ? "block" : "none";
+      });
+    });
+  });
+}
+
+function bindMobile() {
+  const btn = document.getElementById("menuBtn");
+  const overlay = document.getElementById("overlay");
+  btn?.addEventListener("click", () => {
+    document.getElementById("sidebar").classList.toggle("open");
+    overlay.classList.toggle("show");
+  });
+  overlay?.addEventListener("click", closeSidebar);
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar")?.classList.remove("open");
+  document.getElementById("overlay")?.classList.remove("show");
+}
+
+function toast(message, type = "") {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.className = "toast show" + (type ? ` ${type}` : "");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+function filterTable(tableId, query) {
+  const q = (query || "").trim().toLowerCase();
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  table.querySelectorAll("tbody tr").forEach((row) => {
+    row.style.display = !q || row.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+
+let plantIdCounter = 142;
+let editingPlantRow = null;
+
+function plantStatusBadgeClass(status) {
+  if (status === "نشط") return "badge-green";
+  if (status === "قيد المراجعة") return "badge-amber";
+  return "badge-gray";
+}
+
+function submitPlant(e) {
+  e.preventDefault();
+  const form = document.getElementById("plantForm");
+  const tbody = document.getElementById("plantsTableBody");
+  if (!form || !tbody) return false;
+
+  const data = new FormData(form);
+  const name = (data.get("PlantName") || "").toString().trim();
+  const scientific = (data.get("ScientificName") || "").toString().trim();
+  const variety = (data.get("Variety") || "").toString().trim() || "—";
+  const status = (data.get("Status") || "نشط").toString();
+
+  if (!name || !scientific) {
+    toast("يرجى إدخال اسم النبات والاسم العلمي");
+    return false;
+  }
+
+  plantIdCounter += 1;
+  const plantId = `PLT-${String(plantIdCounter).padStart(5, "0")}`;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${escapeHtml(plantId)}</td>
+    <td>${escapeHtml(name)}</td>
+    <td>${escapeHtml(scientific)}</td>
+    <td>${escapeHtml(variety)}</td>
+    <td><span class="badge ${plantStatusBadgeClass(status)}">${escapeHtml(status)}</span></td>
+    <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+  `;
+  tbody.insertBefore(row, tbody.firstChild);
+
+  form.reset();
+  toast(`تم حفظ النبات بنجاح وإصدار ${plantId}`, "success");
+  setTimeout(() => navigate("plants"), 600);
+  return false;
+}
+
+function openEditPlantModal(btn) {
+  const row = btn.closest("tr");
+  if (!row) return;
+
+  editingPlantRow = row;
+  const cells = row.querySelectorAll("td");
+  const plantId = cells[0]?.textContent.trim() || "";
+  const name = cells[1]?.textContent.trim() || "";
+  const scientific = cells[2]?.textContent.trim() || "";
+  const variety = cells[3]?.textContent.trim() || "";
+  const status = cells[4]?.textContent.trim() || "نشط";
+
+  document.getElementById("plantEditSubtitle").textContent = `تعديل ${plantId}`;
+  document.getElementById("editPlantId").value = plantId;
+  document.getElementById("editPlantName").value = name;
+  document.getElementById("editScientificName").value = scientific;
+  document.getElementById("editVariety").value = variety === "—" ? "" : variety;
+  document.getElementById("editPlantStatus").value = status;
+
+  document.getElementById("plantEditModalOverlay").classList.add("show");
+  setTimeout(() => document.getElementById("editPlantName")?.focus(), 50);
+}
+
+function closePlantEditModal() {
+  document.getElementById("plantEditModalOverlay")?.classList.remove("show");
+  document.getElementById("plantEditForm")?.reset();
+  editingPlantRow = null;
+}
+
+function submitPlantEdit(e) {
+  e.preventDefault();
+  if (!editingPlantRow) return false;
+
+  const name = document.getElementById("editPlantName").value.trim();
+  const scientific = document.getElementById("editScientificName").value.trim();
+  const variety = document.getElementById("editVariety").value.trim() || "—";
+  const status = document.getElementById("editPlantStatus").value;
+  const plantId = document.getElementById("editPlantId").value;
+
+  if (!name || !scientific) {
+    toast("يرجى إدخال اسم النبات والاسم العلمي");
+    return false;
+  }
+
+  const cells = editingPlantRow.querySelectorAll("td");
+  cells[1].textContent = name;
+  cells[2].textContent = scientific;
+  cells[3].textContent = variety;
+  cells[4].innerHTML = `<span class="badge ${plantStatusBadgeClass(status)}">${escapeHtml(status)}</span>`;
+
+  toast(`تم تحديث بيانات النبات ${plantId} بنجاح`, "success");
+  closePlantEditModal();
+  return false;
+}
+
+let sampleIdCounter = 482;
+
+function submitSample(e) {
+  e.preventDefault();
+  const form = document.getElementById("sampleForm");
+  const tbody = document.getElementById("samplesTableBody");
+  if (!form || !tbody) return false;
+
+  const plant = document.getElementById("samplePlantSelect").value.trim();
+  const type = document.getElementById("sampleTypeSelect").value.trim();
+  const date = document.getElementById("sampleDateInput").value;
+  const location = document.getElementById("sampleLocationInput").value.trim();
+
+  if (!plant || !type || !date || !location) {
+    toast("يرجى تعبئة الحقول المطلوبة لتسجيل العينة");
+    return false;
+  }
+
+  const sampleCode = `SMP-2026-${String(sampleIdCounter).padStart(4, "0")}`;
+  sampleIdCounter += 1;
+
+  const nextCodeInput = document.getElementById("sampleCodeInput");
+  if (nextCodeInput) {
+    nextCodeInput.value = `SMP-2026-${String(sampleIdCounter).padStart(4, "0")}`;
+  }
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${escapeHtml(sampleCode)}</td>
+    <td>${escapeHtml(plant)}</td>
+    <td>${escapeHtml(type)}</td>
+    <td><span class="badge badge-purple">مسجّلة</span></td>
+    <td>${escapeHtml(location)}</td>
+    <td>${escapeHtml(date)}</td>
+    <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="navigate('receive')">متابعة</button></td>
+  `;
+  tbody.insertBefore(row, tbody.firstChild);
+
+  document.getElementById("sampleLocationInput").value = "";
+  const notes = form.querySelector("textarea");
+  if (notes) notes.value = "";
+
+  toast(`تم تسجيل العينة ${sampleCode} وربطها بالنبات`, "success");
+  setTimeout(() => navigate("samples"), 600);
+  return false;
+}
+
+function receiveSample(e) {
+  e.preventDefault();
+  toast("تم تحديث حالة العينة بنجاح", "success");
+  return false;
+}
+
+function saveAnalysis(e) {
+  e.preventDefault();
+  toast("تم حفظ بيانات التحليل الجينومي", "success");
+  return false;
+}
+
+/* ---------- إضافة نتيجة تحليل (AnalysisResult) ---------- */
+let resultCounter = 9021;
+
+function addResultRow() {
+  const descInput = document.getElementById("resultDescInput");
+  const valueInput = document.getElementById("resultValueInput");
+  const dateInput = document.getElementById("resultDateInput");
+  const tbody = document.getElementById("resultsTableBody");
+  if (!descInput || !valueInput || !dateInput || !tbody) return;
+
+  const desc = descInput.value.trim();
+  const value = valueInput.value.trim();
+  const date = dateInput.value;
+
+  if (!desc || !value) {
+    toast("يرجى إدخال وصف النتيجة وقيمتها قبل الإضافة");
+    return;
+  }
+
+  resultCounter += 1;
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>RES-${resultCounter}</td>
+    <td>${escapeHtml(desc)}</td>
+    <td>${escapeHtml(value)}</td>
+    <td>${date || "—"}</td>
+    <td><span class="badge badge-amber">بانتظار الاعتماد</span></td>
+  `;
+  tbody.insertBefore(row, tbody.firstChild);
+
+  descInput.value = "";
+  valueInput.value = "";
+
+  toast("تمت إضافة النتيجة إلى الجدول بنجاح", "success");
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- لوحة المراجعة والاعتماد: جدول + نافذة تفاصيل ---------- */
+let activeApprovalBtn = null;
+
+function openApprovalDetails(btn) {
+  activeApprovalBtn = btn;
+  const d = btn.dataset;
+
+  document.getElementById("modalAnalysisId").textContent = d.id || "—";
+  document.getElementById("modalType").textContent = d.type || "—";
+  document.getElementById("modalSample").textContent = d.sample || "—";
+  document.getElementById("modalPlant").textContent = d.plant || "—";
+  document.getElementById("modalLab").textContent = d.lab || "—";
+  document.getElementById("modalPerformer").textContent = d.performer || "—";
+  document.getElementById("modalDate").textContent = d.date || "—";
+  document.getElementById("modalFiles").textContent = d.files ?? "—";
+  document.getElementById("modalSummary").textContent = d.summary || "لا يوجد ملخص متاح.";
+
+  const statusBadge = document.getElementById("modalStatusBadge");
+  statusBadge.textContent = d.status || "—";
+  statusBadge.className = "badge " + statusBadgeClass(d.status);
+
+  document.getElementById("modalStatusLine").textContent =
+    `${d.type || ""} · ${d.sample || ""}`;
+
+  const isPending = d.status === "بانتظار الاعتماد";
+  document.getElementById("modalApproveBtn").style.display = isPending ? "" : "none";
+  document.getElementById("modalRejectBtn").style.display = isPending ? "" : "none";
+
+  const infoBox = document.getElementById("modalApprovalInfo");
+  if (d.status === "معتمد" && d.approvedBy) {
+    infoBox.style.display = "block";
+    document.getElementById("modalApprovedBy").textContent = d.approvedBy;
+    document.getElementById("modalApprovalDate").textContent = d.approvalDate || "—";
+  } else {
+    infoBox.style.display = "none";
+  }
+
+  const rejectionBox = document.getElementById("modalRejectionInfo");
+  if (d.status === "مرفوض") {
+    rejectionBox.style.display = "block";
+    document.getElementById("modalRejectReason").textContent = d.rejectReason || "—";
+    document.getElementById("modalRejectDate").textContent = d.rejectDate || "—";
+    document.getElementById("modalRejectNotes").textContent = d.rejectNotes || "—";
+  } else {
+    rejectionBox.style.display = "none";
+  }
+
+  document.getElementById("approvalModalOverlay").classList.add("show");
+}
+
+function closeApprovalModal() {
+  document.getElementById("approvalModalOverlay").classList.remove("show");
+  activeApprovalBtn = null;
+}
+
+function statusBadgeClass(status) {
+  if (status === "معتمد") return "badge-green";
+  if (status === "مرفوض") return "badge-red";
+  return "badge-amber";
+}
+
+function setRowStatus(status, extra = {}) {
+  if (!activeApprovalBtn) return;
+  const row = activeApprovalBtn.closest("tr");
+  const badge = row.querySelector("[data-status-badge]");
+  if (badge) {
+    badge.textContent = status;
+    badge.className = "badge " + statusBadgeClass(status);
+  }
+  row.dataset.rowStatus = status;
+  activeApprovalBtn.dataset.status = status;
+
+  const today = new Date().toISOString().slice(0, 10);
+  if (status === "معتمد") {
+    activeApprovalBtn.dataset.approvedBy = extra.approvedBy || "المستخدم الحالي";
+    activeApprovalBtn.dataset.approvalDate = today;
+  }
+  if (status === "مرفوض") {
+    activeApprovalBtn.dataset.rejectReason = extra.reason || "";
+    activeApprovalBtn.dataset.rejectNotes = extra.notes || "";
+    activeApprovalBtn.dataset.rejectDate = today;
+  }
+  updatePendingCount();
+}
+
+function updatePendingCount() {
+  const count = document.querySelectorAll('#approvalTable tbody tr[data-row-status="بانتظار الاعتماد"]').length;
+  const el = document.getElementById("pendingCountBadge");
+  if (el) el.textContent = `${count} بانتظار الاعتماد`;
+}
+
+function approveFromModal() {
+  setRowStatus("معتمد", { approvedBy: "المستخدم الحالي" });
+  toast("تم اعتماد النتائج وإتاحتها للبحث والتقارير", "success");
+  closeApprovalModal();
+}
+
+/* ---------- نافذة إدخال أسباب الرفض ---------- */
+function openRejectReasonModal() {
+  if (!activeApprovalBtn) return;
+  const d = activeApprovalBtn.dataset;
+
+  document.getElementById("rejectContextLine").textContent = `${d.type || ""} · ${d.sample || ""} — ${d.id || ""}`;
+  document.getElementById("rejectReasonForm").reset();
+  document.getElementById("rejectReasonOverlay").classList.add("show");
+  setTimeout(() => document.getElementById("rejectReasonSelect")?.focus(), 50);
+}
+
+function closeRejectReasonModal() {
+  document.getElementById("rejectReasonOverlay").classList.remove("show");
+}
+
+function confirmReject(e) {
+  e.preventDefault();
+  const reason = document.getElementById("rejectReasonSelect").value;
+  const notes = document.getElementById("rejectReasonNotes").value.trim();
+
+  if (!reason || !notes) {
+    toast("يرجى اختيار سبب الرفض وكتابة الملاحظات");
+    return false;
+  }
+
+  setRowStatus("مرفوض", { reason, notes });
+  toast("تم رفض النتائج وإرسال الملاحظات إلى الفني المسؤول", "success");
+  closeRejectReasonModal();
+  closeApprovalModal();
+  return false;
+}
+
+function filterApprovalStatus(status) {
+  const rows = document.querySelectorAll("#approvalTable tbody tr");
+  rows.forEach((row) => {
+    row.style.display = !status || row.dataset.rowStatus === status ? "" : "none";
+  });
+}
+
+/* ---------- إدارة المستخدمين: جدول + نافذة إضافة / تعديل ---------- */
+const USER_ROLE_BADGES = {
+  researcher: "badge-green",
+  technician: "badge-blue",
+  manager: "badge-amber",
+  admin: "badge-purple",
+};
+
+const ROLE_MATRIX_ORDER = ["admin", "researcher", "technician", "manager"];
+
+const PERMISSION_DEFS = [
+  { id: "manage_users", label: "إدارة المستخدمين والصلاحيات" },
+  { id: "plants_edit", label: "تسجيل / تعديل النباتات" },
+  { id: "samples_register", label: "تسجيل العينات" },
+  { id: "samples_receive", label: "استلام وتحديث حالات العينات" },
+  { id: "analysis_enter", label: "إدخال نتائج التحاليل ورفع الملفات" },
+  { id: "approval", label: "اعتماد / رفض النتائج" },
+  { id: "reports", label: "استخراج التقارير" },
+];
+
+/* true = ممنوح (✓)، false = ممنوع (—) */
+let rolePermissions = {
+  admin: {
+    manage_users: true,
+    plants_edit: true,
+    samples_register: true,
+    samples_receive: true,
+    analysis_enter: true,
+    approval: true,
+    reports: true,
+  },
+  researcher: {
+    manage_users: false,
+    plants_edit: true,
+    samples_register: true,
+    samples_receive: false,
+    analysis_enter: false,
+    approval: false,
+    reports: true,
+  },
+  technician: {
+    manage_users: false,
+    plants_edit: false,
+    samples_register: false,
+    samples_receive: true,
+    analysis_enter: true,
+    approval: false,
+    reports: true,
+  },
+  manager: {
+    manage_users: false,
+    plants_edit: true,
+    samples_register: true,
+    samples_receive: true,
+    analysis_enter: true,
+    approval: true,
+    reports: true,
+  },
+};
+
+let users = [
+  { id: "u1", name: "أحمد السبيعي", username: "a.subaie", role: "researcher", status: "نشط", lastLogin: "اليوم 08:12" },
+  { id: "u2", name: "فهد العتيبي", username: "f.otaibi", role: "technician", status: "نشط", lastLogin: "اليوم 07:45" },
+  { id: "u3", name: "د. هند المطيري", username: "h.mutairi", role: "manager", status: "نشط", lastLogin: "أمس 16:20" },
+  { id: "u4", name: "خالد الإداري", username: "k.admin", role: "admin", status: "نشط", lastLogin: "اليوم 09:01" },
+];
+
+let userModalMode = "add";
+let editingUserId = null;
+let userIdCounter = 4;
+
+function userRoleLabel(roleKey) {
+  return ROLES[roleKey]?.label || roleKey;
+}
+
+function userStatusBadgeClass(status) {
+  return status === "نشط" ? "badge-green" : "badge-red";
+}
+
+function closeAllEditMenus() {
+  document.querySelectorAll(".edit-menu.open").forEach((m) => m.classList.remove("open"));
+}
+
+function toggleEditMenu(btn, event) {
+  event.stopPropagation();
+  const menu = btn.closest(".edit-menu");
+  const wasOpen = menu.classList.contains("open");
+  closeAllEditMenus();
+  if (!wasOpen) menu.classList.add("open");
+}
+
+function renderUsersTable() {
+  const tbody = document.getElementById("usersTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = users
+    .map(
+      (user) => `
+    <tr>
+      <td>${escapeHtml(user.name)}</td>
+      <td dir="ltr" style="text-align:left">${escapeHtml(user.username)}</td>
+      <td><span class="badge ${USER_ROLE_BADGES[user.role] || "badge-gray"}">${escapeHtml(userRoleLabel(user.role))}</span></td>
+      <td><span class="badge ${userStatusBadgeClass(user.status)}">${escapeHtml(user.status)}</span></td>
+      <td>${escapeHtml(user.lastLogin)}</td>
+      <td>
+        <div class="edit-menu">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="toggleEditMenu(this, event)">تعديل ▾</button>
+          <div class="edit-menu-panel">
+            <button type="button" onclick="openEditUserModal('${user.id}')">تعديل بيانات الشخص</button>
+            <button type="button" onclick="openRolePermsModal('${user.role}')">تعديل صلاحيات الأدوار</button>
+          </div>
+        </div>
+      </td>
+    </tr>`
+    )
+    .join("");
+
+  updateUserKpis();
+}
+
+function updateUserKpis() {
+  const total = users.length;
+  const researchers = users.filter((u) => u.role === "researcher").length;
+  const technicians = users.filter((u) => u.role === "technician").length;
+  const managers = users.filter((u) => u.role === "manager").length;
+
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  set("kpiUsersTotal", total);
+  set("kpiUsersResearchers", researchers);
+  set("kpiUsersTechnicians", technicians);
+  set("kpiUsersManagers", managers);
+}
+
+function renderPermissionsMatrix() {
+  const tbody = document.getElementById("permissionsMatrixBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = PERMISSION_DEFS.map((perm) => {
+    const cells = ROLE_MATRIX_ORDER.map((role) => {
+      const allowed = !!rolePermissions[role]?.[perm.id];
+      return `<td><span class="perm-cell ${allowed ? "allowed" : "denied"}">${allowed ? "✓" : "—"}</span></td>`;
+    }).join("");
+    return `<tr><td>${escapeHtml(perm.label)}</td>${cells}</tr>`;
+  }).join("");
+}
+
+function openAddUserModal() {
+  closeAllEditMenus();
+  userModalMode = "add";
+  editingUserId = null;
+
+  document.getElementById("userModalTitle").textContent = "إضافة مستخدم";
+  document.getElementById("userModalSubtitle").textContent = "أدخل بيانات الحساب وحدّد الدور والحالة.";
+  document.getElementById("userForm").reset();
+  document.getElementById("userStatusSelect").value = "نشط";
+  document.getElementById("userUsernameInput").disabled = false;
+
+  document.getElementById("userModalOverlay").classList.add("show");
+  setTimeout(() => document.getElementById("userNameInput")?.focus(), 50);
+}
+
+function openEditUserModal(userId) {
+  closeAllEditMenus();
+  const user = users.find((u) => u.id === userId);
+  if (!user) return;
+
+  userModalMode = "edit";
+  editingUserId = userId;
+
+  document.getElementById("userModalTitle").textContent = "تعديل بيانات الشخص";
+  document.getElementById("userModalSubtitle").textContent = `تعديل بيانات ${user.name}`;
+  document.getElementById("userNameInput").value = user.name;
+  document.getElementById("userUsernameInput").value = user.username;
+  document.getElementById("userRoleSelect").value = user.role;
+  document.getElementById("userStatusSelect").value = user.status;
+  document.getElementById("userUsernameInput").disabled = false;
+
+  document.getElementById("userModalOverlay").classList.add("show");
+  setTimeout(() => document.getElementById("userNameInput")?.focus(), 50);
+}
+
+function closeUserModal() {
+  document.getElementById("userModalOverlay")?.classList.remove("show");
+  document.getElementById("userForm")?.reset();
+  userModalMode = "add";
+  editingUserId = null;
+}
+
+function submitUserForm(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("userNameInput").value.trim();
+  const username = document.getElementById("userUsernameInput").value.trim();
+  const role = document.getElementById("userRoleSelect").value;
+  const status = document.getElementById("userStatusSelect").value;
+
+  if (!name || !username || !role || !status) {
+    toast("يرجى تعبئة جميع الحقول المطلوبة");
+    return false;
+  }
+
+  const duplicate = users.some(
+    (u) => u.username.toLowerCase() === username.toLowerCase() && u.id !== editingUserId
+  );
+  if (duplicate) {
+    toast("اسم المستخدم مستخدم مسبقاً — اختر اسماً آخر");
+    return false;
+  }
+
+  if (userModalMode === "add") {
+    userIdCounter += 1;
+    users.unshift({
+      id: `u${userIdCounter}`,
+      name,
+      username,
+      role,
+      status,
+      lastLogin: "—",
+    });
+    toast("تم إضافة المستخدم بنجاح", "success");
+  } else {
+    const user = users.find((u) => u.id === editingUserId);
+    if (!user) return false;
+    user.name = name;
+    user.username = username;
+    user.role = role;
+    user.status = status;
+    toast("تم تحديث بيانات الشخص بنجاح", "success");
+  }
+
+  renderUsersTable();
+  closeUserModal();
+  return false;
+}
+
+function openRolePermsModal(roleKey) {
+  closeAllEditMenus();
+  const select = document.getElementById("rolePermsRoleSelect");
+  const role = roleKey && rolePermissions[roleKey] ? roleKey : "admin";
+  select.value = role;
+
+  document.getElementById("rolePermsSubtitle").textContent =
+    `امنح أو امنع الصلاحيات لدور: ${userRoleLabel(role)}`;
+
+  loadRolePermsChecks();
+  document.getElementById("rolePermsModalOverlay").classList.add("show");
+  setTimeout(() => select.focus(), 50);
+}
+
+function loadRolePermsChecks() {
+  const role = document.getElementById("rolePermsRoleSelect").value;
+  const list = document.getElementById("rolePermsList");
+  if (!list || !rolePermissions[role]) return;
+
+  document.getElementById("rolePermsSubtitle").textContent =
+    `امنح أو امنع الصلاحيات لدور: ${userRoleLabel(role)}`;
+
+  list.innerHTML = PERMISSION_DEFS.map((perm) => {
+    const checked = rolePermissions[role][perm.id] ? "checked" : "";
+    return `
+      <label class="perm-item">
+        <input type="checkbox" data-perm-id="${perm.id}" ${checked} />
+        <span class="perm-item-text">
+          <strong>${escapeHtml(perm.label)}</strong>
+          <small>${rolePermissions[role][perm.id] ? "ممنوحة حالياً" : "ممنوعة حالياً"}</small>
+        </span>
+        <span class="perm-item-state">${rolePermissions[role][perm.id] ? "منع" : "منح"}</span>
+      </label>`;
+  }).join("");
+
+  list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+    cb.addEventListener("change", () => {
+      const state = cb.closest(".perm-item").querySelector(".perm-item-state");
+      const small = cb.closest(".perm-item").querySelector("small");
+      if (state) state.textContent = cb.checked ? "منع" : "منح";
+      if (small) small.textContent = cb.checked ? "ممنوحة حالياً" : "ممنوعة حالياً";
+      cb.closest(".perm-item").classList.toggle("is-allowed", cb.checked);
+      cb.closest(".perm-item").classList.toggle("is-denied", !cb.checked);
+    });
+    cb.closest(".perm-item").classList.toggle("is-allowed", cb.checked);
+    cb.closest(".perm-item").classList.toggle("is-denied", !cb.checked);
+  });
+}
+
+function closeRolePermsModal() {
+  document.getElementById("rolePermsModalOverlay")?.classList.remove("show");
+}
+
+function submitRolePermsForm(e) {
+  e.preventDefault();
+  const role = document.getElementById("rolePermsRoleSelect").value;
+  if (!rolePermissions[role]) {
+    toast("الدور غير صالح");
+    return false;
+  }
+
+  const list = document.getElementById("rolePermsList");
+  list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+    const permId = cb.dataset.permId;
+    if (permId) rolePermissions[role][permId] = cb.checked;
+  });
+
+  renderPermissionsMatrix();
+  toast(`تم تحديث صلاحيات دور «${userRoleLabel(role)}» بنجاح`, "success");
+  closeRolePermsModal();
+  return false;
+}
+
+/* ---------- لوحة مركز بيانات البذور (مسؤول النظام) ---------- */
+const SEED_CROPS = [
+  /* الحبوب — 6 */
+  { id: "bread-wheat", name: "قمح الخبز", scientific: "Triticum aestivum", icon: "🌾", method: "GBS", total: 99, saudi: 75, color: "#D4A574", category: "grains", en: "BreadWheat", status: "اعتماد", hasGenomic: true, highlight: true, dashed: false, inPassport: true },
+  { id: "sorghum", name: "الذرة الرفيعة", scientific: "Sorghum bicolor", icon: "🌽", method: "WGS", total: 85, saudi: 85, color: "#C0392B", category: "grains", en: "Sorghum", status: "اعتماد", hasGenomic: true, highlight: true, dashed: false, inPassport: true },
+  { id: "millet", name: "الدخن", scientific: "Pennisetum typhoideum", icon: "🌾", method: "WGS", total: 57, saudi: 39, color: "#C9A84C", category: "grains", en: "Millet", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "barley", name: "الشعير", scientific: "Hordeum vulgare", icon: "🌿", method: "GBS", total: 37, saudi: 27, color: "#A0845C", category: "grains", en: "Barley", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "durum", name: "قمح الدوروم", scientific: "Triticum turgidum", icon: "🌾", method: "GBS", total: 9, saudi: 8, color: "#B8860B", category: "grains", en: "Durum", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "oats", name: "الشوفان", scientific: "Avena sativa", icon: "🌾", method: "GBS", total: 4, saudi: 0, color: "#94a3b8", category: "grains", en: "Oats", status: "GBS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+
+  /* البقوليات — 5 */
+  { id: "faba", name: "الفول", scientific: "Vicia faba", icon: "🫘", method: "GBS", total: 12, saudi: 2, color: "#5D8A5E", category: "legumes", en: "FabaBean", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "cowpea", name: "اللوبيا", scientific: "Vigna unguiculata", icon: "🫘", method: "WGS", total: 14, saudi: 0, color: "#7c3aed", category: "legumes", en: "Cowpea", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "chickpea", name: "الحمص", scientific: "Cicer arietinum", icon: "🫘", method: "WGS", total: 10, saudi: 0, color: "#8b5cf6", category: "legumes", en: "Chickpea", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "guar", name: "الجوار", scientific: "Cyamopsis tetragonoloba", icon: "🌱", method: "WGS", total: 4, saudi: 0, color: "#22c55e", category: "legumes", en: "Guar", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "fenugreek", name: "الحلبة", scientific: "Trigonella foenum-graecum", icon: "🌿", method: "WGS", total: 2, saudi: 0, color: "#65a30d", category: "legumes", en: "Fenugreek", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+
+  /* الخضروات — 3 */
+  { id: "okra", name: "البامية", scientific: "Abelmoschus esculentus", icon: "🥬", method: "WGS", total: 38, saudi: 0, color: "#16a34a", category: "vegetables", en: "Okra", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "chili", name: "الفلفل الحار", scientific: "Capsicum annuum", icon: "🌶️", method: "WGS", total: 20, saudi: 0, color: "#ea580c", category: "vegetables", en: "Chili", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "pumpkin", name: "القرع", scientific: "Cucurbita pepo", icon: "🎃", method: "WGS", total: 10, saudi: 0, color: "#f97316", category: "vegetables", en: "Pumpkin", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+
+  /* الفواكه — 12 */
+  { id: "mango", name: "المانجو", scientific: "Mangifera indica", icon: "🥭", method: "WGS", total: 63, saudi: 0, color: "#F4A623", category: "fruits", en: "Mango", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "papaya", name: "البابايا", scientific: "Carica papaya", icon: "🍈", method: "WGS", total: 13, saudi: 13, color: "#FFA500", category: "fruits", en: "Papaya", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "fig", name: "التين", scientific: "Ficus carica", icon: "🍇", method: "WGS", total: 24, saudi: 0, color: "#9333ea", category: "fruits", en: "Fig", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "pomegranate", name: "الرمان", scientific: "Punica granatum", icon: "🍎", method: "WGS", total: 16, saudi: 0, color: "#be123c", category: "fruits", en: "Pomegranate", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "peach", name: "الخوخ", scientific: "Prunus persica", icon: "🍑", method: "WGS", total: 10, saudi: 0, color: "#fb7185", category: "fruits", en: "Peach", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "plum", name: "البرقوق", scientific: "Prunus domestica", icon: "🟣", method: "WGS", total: 8, saudi: 0, color: "#7e22ce", category: "fruits", en: "Plum", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "grape", name: "العنب", scientific: "Vitis vinifera", icon: "🍇", method: "WGS", total: 8, saudi: 0, color: "#6d28d9", category: "fruits", en: "Grape", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "apricot", name: "المشمش", scientific: "Prunus armeniaca", icon: "🧡", method: "WGS", total: 8, saudi: 0, color: "#f59e0b", category: "fruits", en: "Apricot", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "guava", name: "الجوافة", scientific: "Psidium guajava", icon: "🍈", method: "WGS", total: 2, saudi: 0, color: "#16a34a", category: "fruits", en: "Guava", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "lemon", name: "الليمون", scientific: "Citrus limon", icon: "🍋", method: "WGS", total: 2, saudi: 0, color: "#eab308", category: "fruits", en: "Lemon", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "quince", name: "السفرجل", scientific: "Cydonia oblonga", icon: "🍐", method: "WGS", total: 2, saudi: 0, color: "#ca8a04", category: "fruits", en: "Quince", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+  { id: "armenian-apricot", name: "المشمش الأرمني", scientific: "Prunus armeniaca var.", icon: "🍑", method: "WGS", total: 1, saudi: 0, color: "#d97706", category: "fruits", en: "ArmenianApricot", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+
+  /* البذور الزيتية — 1 */
+  { id: "sesame", name: "السمسم", scientific: "Sesamum indicum", icon: "🌱", method: "WGS", total: 62, saudi: 13, color: "#C9A020", category: "oilseeds", en: "Sesame", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+
+  /* أخرى — 2 */
+  { id: "coffee", name: "القهوة", scientific: "Coffea arabica", icon: "☕", method: "WGS", total: 80, saudi: 80, color: "#6B4423", category: "other", en: "Coffee", status: "اعتماد", hasGenomic: true, highlight: false, dashed: false, inPassport: true },
+  { id: "nemaguard", name: "نيما غارد", scientific: "Prunus persica × davidiana", icon: "🌱", method: "WGS", total: 2, saudi: 0, color: "#2563eb", category: "other", en: "Nemaguard", status: "WGS", hasGenomic: true, highlight: false, dashed: true, inPassport: false },
+];
+
+const SEED_PASSPORT_CROPS = () => SEED_CROPS.filter((c) => c.inPassport);
+
+/** بيانات التوزيع الإقليمي من seed.embryo.sa — مجموع الاعتمادات السعودية = 342 */
+const SEED_REGIONS = [
+  { id: "riyadh", name: "الرياض", en: "Riyadh", lat: 24.7136, lng: 46.6753, count: 91, crops: { sorghum: 71, "bread-wheat": 13, millet: 3, durum: 2, barley: 2 }, crop: "sorghum" },
+  { id: "jazan", name: "جازان", en: "Jazan", lat: 16.8892, lng: 42.5511, count: 90, crops: { coffee: 41, sorghum: 14, papaya: 13, millet: 10, sesame: 10, "bread-wheat": 1, barley: 1 }, crop: "coffee" },
+  { id: "aseer", name: "عسير", en: "Aseer", lat: 18.2164, lng: 42.5053, count: 56, crops: { coffee: 26, "bread-wheat": 17, barley: 6, durum: 3, millet: 3, sesame: 1 }, crop: "coffee" },
+  { id: "baha", name: "الباحة", en: "Al-Baha", lat: 20.0129, lng: 41.4677, count: 32, crops: { coffee: 13, millet: 10, "bread-wheat": 5, barley: 2, sesame: 2 }, crop: "coffee" },
+  { id: "qaseem", name: "القصيم", en: "Qaseem", lat: 26.3264, lng: 43.975, count: 24, crops: { "bread-wheat": 15, millet: 4, barley: 4, durum: 1 }, crop: "bread-wheat" },
+  { id: "taif", name: "الطائف", en: "Taif", lat: 21.2703, lng: 40.4158, count: 23, crops: { "bread-wheat": 11, millet: 7, barley: 3, durum: 2 }, crop: "bread-wheat" },
+  { id: "najran", name: "نجران", en: "Najran", lat: 17.4924, lng: 44.1277, count: 13, crops: { "bread-wheat": 8, barley: 5 }, crop: "bread-wheat" },
+  { id: "hail", name: "حائل", en: "Hail", lat: 27.5219, lng: 41.6901, count: 7, crops: { "bread-wheat": 4, barley: 3 }, crop: "bread-wheat" },
+  { id: "eastern", name: "الشرقية", en: "Eastern", lat: 25.3833, lng: 49.5667, count: 4, crops: { millet: 2, faba: 2 }, crop: "millet" },
+  { id: "tabuk", name: "تبوك", en: "Tabuk", lat: 28.3998, lng: 36.5782, count: 2, crops: { "bread-wheat": 1, barley: 1 }, crop: "bread-wheat" },
+];
+
+function seedDominantCrop(crops) {
+  let best = null;
+  let max = -1;
+  Object.entries(crops || {}).forEach(([id, n]) => {
+    if ((n || 0) > max) {
+      max = n || 0;
+      best = id;
+    }
+  });
+  return best;
+}
+
+/** الاعتمادات السعودية لكل محصول — كما في seed.embryo.sa (مجموع المناطق) */
+function getSeedSaudiByCrop() {
+  const map = {};
+  SEED_REGIONS.forEach((r) => {
+    Object.entries(r.crops || {}).forEach(([id, n]) => {
+      map[id] = (map[id] || 0) + (n || 0);
+    });
+  });
+  return map;
+}
+
+function syncPassportSaudiFromRegions() {
+  const saudiMap = getSeedSaudiByCrop();
+  SEED_CROPS.forEach((c) => {
+    if (c.inPassport) c.saudi = saudiMap[c.id] || 0;
+  });
+}
+
+function seedPassportGrandTotal() {
+  return SEED_PASSPORT_CROPS().reduce((s, c) => s + c.total, 0);
+}
+
+function seedSaudiGrandTotal() {
+  return SEED_REGIONS.reduce((s, r) => s + r.count, 0);
+}
+
+function seedRegionDisplayCount(region) {
+  if (seedSelectedCrops.length) {
+    return seedSelectedCrops.reduce((s, id) => s + (region.crops?.[id] || 0), 0);
+  }
+  return region.count;
+}
+
+function seedRegionDisplayCrop(region) {
+  if (seedSelectedCrops.length === 1) return seedSelectedCrops[0];
+  if (seedSelectedCrops.length > 1) {
+    const subset = {};
+    seedSelectedCrops.forEach((id) => {
+      if (region.crops?.[id]) subset[id] = region.crops[id];
+    });
+    return seedDominantCrop(subset) || region.crop;
+  }
+  return region.crop || seedDominantCrop(region.crops);
+}
+
+let seedMap = null;
+let seedMarkers = [];
+let seedSelectedCrops = [];
+let seedFilterRegion = null;
+let seedExpandedCategory = null;
+let seedGenomicOnly = false;
+let seedDashReady = false;
+
+function toggleSeedCropFilter(cropId) {
+  if (!cropId) return;
+  const idx = seedSelectedCrops.indexOf(cropId);
+  if (idx >= 0) seedSelectedCrops.splice(idx, 1);
+  else seedSelectedCrops.push(cropId);
+  renderSeedFilterBar();
+  updateSeedCategoryUI();
+  applySeedFilters();
+}
+
+function clearSeedCropFilters() {
+  seedSelectedCrops = [];
+  seedFilterRegion = null;
+  renderSeedFilterBar();
+  updateSeedCategoryUI();
+  applySeedFilters();
+}
+
+function renderSeedFilterBar() {
+  const bar = document.getElementById("seedFilterBar");
+  const chips = document.getElementById("seedFilterChips");
+  if (!bar || !chips) return;
+
+  const activeRegion = SEED_REGIONS.find((r) => r.id === seedFilterRegion);
+
+  if (!seedSelectedCrops.length && !activeRegion) {
+    bar.hidden = true;
+    chips.innerHTML = "";
+    return;
+  }
+
+  bar.hidden = false;
+  const cropChips = seedSelectedCrops
+    .map((id) => {
+      const crop = SEED_CROPS.find((c) => c.id === id);
+      if (!crop) return "";
+      return `<button type="button" class="seed-filter-chip" data-crop="${crop.id}" style="background:${crop.color}">
+        <span>${crop.name}</span>
+        <span class="seed-filter-chip-x" aria-hidden="true">×</span>
+      </button>`;
+    })
+    .join("");
+
+  const regionChip = activeRegion
+    ? `<button type="button" class="seed-filter-chip seed-filter-chip-region" data-region="${activeRegion.id}" style="background:#193661">
+        <span aria-hidden="true">📍</span>
+        <span>${activeRegion.name}</span>
+        <span class="seed-filter-chip-x" aria-hidden="true">×</span>
+      </button>`
+    : "";
+
+  chips.innerHTML = cropChips + regionChip;
+
+  chips.querySelectorAll(".seed-filter-chip[data-crop]").forEach((chip) => {
+    chip.addEventListener("click", () => toggleSeedCropFilter(chip.dataset.crop));
+  });
+  chips.querySelectorAll(".seed-filter-chip[data-region]").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      seedFilterRegion = null;
+      applySeedFilters();
+    });
+  });
+}
+
+function initSeedDashboard() {
+  if (currentRole !== "admin") return;
+  const root = document.getElementById("dashboard-seed");
+  if (!root || root.style.display === "none") return;
+
+  syncPassportSaudiFromRegions();
+
+  if (!seedDashReady) {
+    renderSeedCropList();
+    renderSeedMapLegend();
+    renderSeedZonesList();
+    renderSeedCharts();
+    bindSeedInteractions();
+    seedDashReady = true;
+  }
+
+  initSeedMap();
+  renderSeedFilterBar();
+  applySeedFilters();
+}
+
+function bindSeedInteractions() {
+  document.querySelectorAll(".seed-map-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".seed-map-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      const id = tab.dataset.seedTab;
+      document.getElementById("seed-tab-regional").hidden = id !== "regional";
+      document.getElementById("seed-tab-zones").hidden = id !== "zones";
+      if (id === "regional" && seedMap) setTimeout(() => seedMap.invalidateSize(), 60);
+    });
+  });
+
+  document.querySelectorAll(".seed-cat").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.category;
+      const closing = seedExpandedCategory === cat;
+      seedExpandedCategory = closing ? null : cat;
+      updateSeedCategoryUI();
+    });
+  });
+
+  document.getElementById("seedGenomicOnly")?.addEventListener("change", (e) => {
+    seedGenomicOnly = e.target.checked;
+    renderSeedSubcrops();
+  });
+
+  document.getElementById("seedFilterClear")?.addEventListener("click", clearSeedCropFilters);
+}
+
+function updateSeedCategoryUI() {
+  document.querySelectorAll(".seed-cat").forEach((b) => {
+    const cat = b.dataset.category;
+    const open = seedExpandedCategory === cat;
+    const selectedCount = SEED_CROPS.filter(
+      (c) => c.category === cat && seedSelectedCrops.includes(c.id)
+    ).length;
+
+    b.classList.toggle("active", open);
+    b.classList.toggle("has-selection", selectedCount > 0);
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+
+    const caret = b.querySelector(".seed-cat-caret");
+    if (caret) caret.textContent = open ? "▴" : "▾";
+
+    let badge = b.querySelector(".seed-cat-badge");
+    if (selectedCount > 0) {
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "seed-cat-badge";
+        b.appendChild(badge);
+      }
+      badge.textContent = String(selectedCount);
+      badge.hidden = false;
+    } else if (badge) {
+      badge.hidden = true;
+    }
+  });
+
+  const panel = document.getElementById("seedCatPanel");
+  if (!panel) return;
+  if (!seedExpandedCategory) {
+    panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  renderSeedSubcrops();
+}
+
+function renderSeedSubcrops() {
+  const grid = document.getElementById("seedSubcropGrid");
+  if (!grid || !seedExpandedCategory) return;
+
+  let crops = SEED_CROPS.filter((c) => c.category === seedExpandedCategory);
+  if (seedGenomicOnly) crops = crops.filter((c) => c.hasGenomic);
+
+  if (!crops.length) {
+    grid.innerHTML = `<p class="seed-empty">لا توجد محاصيل مطابقة لهذا التصفية.</p>`;
+    return;
+  }
+
+  grid.innerHTML = crops.map((c) => {
+    const active = seedSelectedCrops.includes(c.id) ? "active" : "";
+    const dashed = c.dashed ? "is-dashed" : "";
+    return `
+      <button type="button" class="seed-subcrop ${dashed} ${active}" data-crop="${c.id}">
+        <span class="seed-subcrop-ico">${c.icon}</span>
+        <strong class="seed-subcrop-name">${c.name}</strong>
+        <span class="seed-subcrop-value" style="color:${c.color}">${c.total}</span>
+        <span class="seed-subcrop-status">${c.status}</span>
+      </button>`;
+  }).join("");
+
+  grid.querySelectorAll(".seed-subcrop").forEach((btn) => {
+    btn.addEventListener("click", () => toggleSeedCropFilter(btn.dataset.crop));
+  });
+}
+
+function renderSeedCropList() {
+  const list = document.getElementById("seedCropList");
+  if (!list) return;
+  syncPassportSaudiFromRegions();
+
+  const order = ["bread-wheat", "durum", "coffee", "barley", "faba", "millet", "sorghum", "sesame", "mango", "papaya"];
+  const crops = SEED_PASSPORT_CROPS().slice().sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  const saudiMap = getSeedSaudiByCrop();
+
+  list.innerHTML = crops.map((c) => {
+    const saudi = seedFilterRegion
+      ? SEED_REGIONS.find((r) => r.id === seedFilterRegion)?.crops?.[c.id] || 0
+      : saudiMap[c.id] || 0;
+    const total = c.total;
+    const pct = total ? Math.round((saudi / total) * 100) : 0;
+    return `
+      <button type="button" class="seed-crop-item" data-crop="${c.id}" data-category="${c.category}">
+        <div class="seed-crop-row">
+          <div class="seed-crop-info">
+            <div class="seed-crop-head">
+              <span class="seed-crop-name"><span class="seed-crop-ico">${c.icon}</span> ${c.name}</span>
+              <span class="seed-method">${c.method}</span>
+            </div>
+            <div class="seed-crop-saudi">${saudi} سعودي <span class="seed-crop-pct">(${pct}%)</span></div>
+            <div class="seed-progress"><span style="width:${pct}%;background:${c.color}"></span></div>
+          </div>
+          <div class="seed-crop-metric" style="color:${c.color}">
+            <strong>${total}</strong>
+            <em>${c.scientific}</em>
+          </div>
+        </div>
+      </button>`;
+  }).join("");
+
+  list.querySelectorAll(".seed-crop-item").forEach((item) => {
+    item.addEventListener("click", () => toggleSeedCropFilter(item.dataset.crop));
+  });
+}
+
+function renderSeedMapLegend() {
+  const legend = document.getElementById("seedMapLegend");
+  if (!legend) return;
+
+  const order = ["papaya", "mango", "sesame", "sorghum", "millet", "faba", "barley", "coffee", "durum", "bread-wheat"];
+  const crops = order
+    .map((id) => SEED_CROPS.find((c) => c.id === id))
+    .filter(Boolean);
+
+  legend.innerHTML = `
+    <span class="seed-legend-note">(لون العلامة = المحصول السائد في المنطقة)</span>
+    ${crops
+      .map(
+        (c) => `
+      <button type="button" class="seed-legend-item" data-crop="${c.id}" title="${c.name}">
+        <i style="background:${c.color}"></i>
+        <span>${c.name}</span>
+      </button>`
+      )
+      .join("")}
+  `;
+
+  legend.querySelectorAll(".seed-legend-item").forEach((item) => {
+    item.addEventListener("click", () => toggleSeedCropFilter(item.dataset.crop));
+  });
+}
+
+function renderSeedCropChips() {
+  renderSeedMapLegend();
+}
+
+function renderSeedZonesList() {
+  const el = document.getElementById("seedZonesList");
+  if (!el) return;
+  const regions = [...SEED_REGIONS].filter((r) => seedRegionDisplayCount(r) > 0);
+  const max = Math.max(...regions.map((r) => seedRegionDisplayCount(r)), 1);
+  el.innerHTML = regions
+    .sort((a, b) => seedRegionDisplayCount(b) - seedRegionDisplayCount(a))
+    .map((r) => {
+      const cropId = seedRegionDisplayCrop(r);
+      const crop = SEED_CROPS.find((c) => c.id === cropId);
+      const count = seedRegionDisplayCount(r);
+      const pct = Math.max(4, Math.round((count / max) * 100));
+      return `
+      <button type="button" class="seed-zone-row${seedFilterRegion === r.id ? " active" : ""}" data-region="${r.id}">
+        <div class="seed-zone-top">
+          <span class="seed-zone-name"><i aria-hidden="true">📍</i>${r.en}</span>
+          <strong class="seed-zone-count">${count}</strong>
+        </div>
+        <div class="seed-zone-info">
+          <small>${crop ? crop.name : "—"}</small>
+          <small class="seed-zone-sub-count" style="color:${crop ? crop.color : "#1b8354"}">${count}</small>
+        </div>
+        <div class="seed-zone-bar"><span style="width:${pct}%;background:${crop ? crop.color : "#1b8354"}"></span></div>
+      </button>`;
+    })
+    .join("");
+
+  el.querySelectorAll(".seed-zone-row").forEach((row) => {
+    row.addEventListener("click", () => {
+      const id = row.dataset.region;
+      seedFilterRegion = seedFilterRegion === id ? null : id;
+      applySeedFilters();
+      pulseSeedPassportPanel();
+    });
+  });
+}
+
+function pulseSeedPassportPanel() {
+  const panel = document.querySelector(".seed-passport");
+  if (!panel) return;
+  panel.classList.remove("seed-pulse");
+  requestAnimationFrame(() => panel.classList.add("seed-pulse"));
+  setTimeout(() => panel.classList.remove("seed-pulse"), 700);
+}
+
+function renderSeedCharts() {
+  syncPassportSaudiFromRegions();
+  const order = ["bread-wheat", "durum", "coffee", "barley", "faba", "millet", "sorghum", "sesame", "mango", "papaya"];
+  const passport = order.map((id) => SEED_CROPS.find((c) => c.id === id)).filter(Boolean);
+  const total = passport.reduce((s, c) => s + c.total, 0) || 1;
+
+  /* توزيع المحاصيل — Donut */
+  const cropDist = document.getElementById("seedCropDistChart");
+  if (cropDist) {
+    let acc = 0;
+    const stops = passport.map((c) => {
+      const start = (acc / total) * 100;
+      acc += c.total;
+      const end = (acc / total) * 100;
+      return `${c.color} ${start}% ${end}%`;
+    });
+
+    cropDist.innerHTML = `
+      <ul class="seed-donut-legend">
+        ${passport
+          .map((c) => {
+            const pct = Math.round((c.total / total) * 100);
+            return `<li>
+              <span class="vals"><em>${pct}%</em> <strong>${c.total}</strong></span>
+              <span class="name"><i style="background:${c.color}"></i>${c.name}</span>
+            </li>`;
+          })
+          .join("")}
+      </ul>
+      <div class="seed-donut" style="background:conic-gradient(${stops.join(",")})" aria-hidden="true">
+        <div class="seed-donut-hole">
+          <strong>${total}</strong>
+          <span>اعتماد</span>
+        </div>
+      </div>`;
+  }
+
+  /* نظرة إقليمية — أشرطة أفقية بتدرج أخضر */
+  const regionChart = document.getElementById("seedRegionChart");
+  if (regionChart) {
+    const regions = [...SEED_REGIONS].sort((a, b) => b.count - a.count);
+    const scale = 100;
+    const greens = ["#0f5132", "#146c43", "#1b8354", "#2f9a66", "#3fad75", "#55bc86", "#6fc997", "#8fd6ab", "#a9e0bc", "#c5ebd0"];
+    regionChart.innerHTML = `
+      <div class="seed-hbars">
+        ${regions
+          .map((r, i) => {
+            const w = Math.max(2, Math.round((r.count / scale) * 100));
+            return `<div class="seed-hbar-row">
+              <span class="seed-hbar-name">${r.en}</span>
+              <div class="seed-hbar-track">
+                <span class="seed-hbar-fill" style="width:${w}%;background:${greens[i] || greens[greens.length - 1]}"></span>
+              </div>
+              <span class="seed-hbar-val">${r.count}</span>
+            </div>`;
+          })
+          .join("")}
+      </div>
+      <div class="seed-axis">
+        <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+      </div>`;
+  }
+
+  /* سعودي مقابل دولي — أشرطة مكدسة */
+  const originChart = document.getElementById("seedOriginChart");
+  if (originChart) {
+    const enLabel = {
+      "bread-wheat": "Bread Wheat",
+      durum: "Durum",
+      coffee: "Coffee",
+      barley: "Barley",
+      faba: "Faba Bean",
+      millet: "Millet",
+      sorghum: "Sorghum",
+      sesame: "Sesame",
+      mango: "Mango",
+      papaya: "Papaya",
+    };
+    const scale = 100;
+    originChart.innerHTML = `
+      <div class="seed-hbars origin">
+        ${passport
+          .map((c) => {
+            const barW = Math.max(2, Math.round((c.total / scale) * 100));
+            const saudiPct = c.total ? Math.round((c.saudi / c.total) * 100) : 0;
+            const intlPct = 100 - saudiPct;
+            return `<div class="seed-hbar-row">
+              <span class="seed-hbar-name">${enLabel[c.id] || c.en}</span>
+              <div class="seed-hbar-track">
+                <div class="seed-stack-bar" style="width:${barW}%">
+                  <span class="saudi" style="width:${saudiPct}%"></span>
+                  <span class="intl" style="width:${intlPct}%"></span>
+                </div>
+              </div>
+            </div>`;
+          })
+          .join("")}
+      </div>
+      <div class="seed-axis">
+        <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+      </div>`;
+  }
+}
+
+function applySeedFilters() {
+  syncPassportSaudiFromRegions();
+
+  const passport = SEED_PASSPORT_CROPS();
+  const saudiMap = getSeedSaudiByCrop();
+  const selected = seedSelectedCrops;
+
+  const listCrops = passport.filter((c) => {
+    if (selected.length) return selected.includes(c.id);
+    return true;
+  });
+  const listIds = new Set(listCrops.map((c) => c.id));
+
+  const passportTotal = listCrops.reduce((s, c) => s + c.total, 0);
+  const totalEl = document.getElementById("seedPassportTotal");
+  if (totalEl) totalEl.textContent = String(passportTotal || seedPassportGrandTotal());
+
+  document.querySelectorAll(".seed-crop-item").forEach((item) => {
+    const id = item.dataset.crop;
+    const crop = SEED_CROPS.find((c) => c.id === id);
+    if (!crop) return;
+
+    const show = listIds.has(id);
+    item.hidden = !show;
+    item.classList.toggle("active", selected.includes(id));
+
+    const saudi = seedFilterRegion
+      ? SEED_REGIONS.find((r) => r.id === seedFilterRegion)?.crops?.[id] || 0
+      : saudiMap[id] || 0;
+    const pct = crop.total ? Math.round((saudi / crop.total) * 100) : 0;
+    const saudiEl = item.querySelector(".seed-crop-saudi");
+    const bar = item.querySelector(".seed-progress span");
+    if (saudiEl) saudiEl.textContent = `${saudi} سعودي (${pct}%)`;
+    if (bar) bar.style.width = `${pct}%`;
+  });
+
+  document.querySelectorAll(".seed-legend-item").forEach((item) => {
+    item.classList.toggle("active", selected.includes(item.dataset.crop));
+  });
+
+  renderSeedZonesList();
+
+  const visibleRegions = SEED_REGIONS.filter((r) => {
+    if (seedFilterRegion && r.id !== seedFilterRegion) return false;
+    if (selected.length) {
+      return selected.some((id) => (r.crops?.[id] || 0) > 0);
+    }
+    return true;
+  });
+
+  const saudiTotal = visibleRegions.reduce((s, r) => s + seedRegionDisplayCount(r), 0);
+  const noMapFilters = !selected.length && !seedFilterRegion;
+  const displaySaudi = noMapFilters ? seedSaudiGrandTotal() : saudiTotal;
+  const displayRegions = noMapFilters ? SEED_REGIONS.length : visibleRegions.length;
+
+  const saudiCount = document.getElementById("seedSaudiCount");
+  const saudiFooter = document.getElementById("seedSaudiFooter");
+  const activeRegions = document.getElementById("seedActiveRegions");
+  if (saudiCount) saudiCount.textContent = String(displaySaudi);
+  if (saudiFooter) saudiFooter.textContent = String(displaySaudi);
+  if (activeRegions) activeRegions.textContent = String(displayRegions);
+
+  const hint = document.getElementById("seedPassportHint");
+  if (hint) {
+    const activeRegion = SEED_REGIONS.find((r) => r.id === seedFilterRegion);
+    hint.textContent = activeRegion
+      ? `مُصفّى حسب منطقة: ${activeRegion.name} — انقر عليها مجددًا لإزالة التصفية`
+      : "انقر على منطقة في الخريطة أو بلاطة محصول للاستكشاف";
+  }
+
+  renderSeedFilterBar();
+  updateSeedMarkers(visibleRegions);
+}
+
+function initSeedMap() {
+  const el = document.getElementById("seedMap");
+  if (!el || typeof L === "undefined") return;
+
+  if (seedMap) {
+    seedMap.invalidateSize();
+    return;
+  }
+
+  seedMap = L.map("seedMap", {
+    zoomControl: true,
+    attributionControl: true,
+  }).setView([23.8859, 45.0792], 5);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 12,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(seedMap);
+
+  updateSeedMarkers(SEED_REGIONS);
+  setTimeout(() => seedMap.invalidateSize(), 120);
+}
+
+function updateSeedMarkers(regions) {
+  if (!seedMap) return;
+  seedMarkers.forEach((m) => seedMap.removeLayer(m));
+  seedMarkers = [];
+
+  regions.forEach((r) => {
+    const count = seedRegionDisplayCount(r);
+    if (!count) return;
+
+    const cropId = seedRegionDisplayCrop(r);
+    const crop = SEED_CROPS.find((c) => c.id === cropId);
+    const color = crop ? crop.color : "#C0392B";
+    const radius = Math.max(8, Math.min(42, 6 + Math.sqrt(count) * 3.2));
+    const selected = seedFilterRegion === r.id;
+
+    const marker = L.circleMarker([r.lat, r.lng], {
+      radius,
+      color: selected ? "#0f203a" : "#fff",
+      weight: selected ? 3 : 2,
+      fillColor: color,
+      fillOpacity: selected ? 0.95 : 0.78,
+      opacity: 1,
+    }).addTo(seedMap);
+
+    const cropLines = Object.entries(r.crops || {})
+      .sort((a, b) => b[1] - a[1])
+      .map(([id, n]) => {
+        const c = SEED_CROPS.find((x) => x.id === id);
+        return `${c ? c.name : id}: ${n}`;
+      })
+      .join("<br>");
+
+    marker.bindPopup(
+      `<div style="min-width:140px;text-align:right;direction:rtl">
+        <strong>${r.name}</strong><br>
+        <span style="color:#667085">${count} اعتماد سعودي</span><br>
+        <span style="color:#667085">السائد: ${crop ? crop.name : "—"}</span>
+        <hr style="margin:6px 0;border:0;border-top:1px solid #e4e7ec">
+        ${cropLines}
+      </div>`
+    );
+
+    marker.on("click", () => {
+      seedFilterRegion = seedFilterRegion === r.id ? null : r.id;
+      applySeedFilters();
+    });
+
+    seedMarkers.push(marker);
+  });
+}
+
+/* ---------- خريطة تحديد موقع جمع العينة ---------- */
+let sampleMap = null;
+let sampleMarker = null;
+
+const DEFAULT_MAP_CENTER = [24.7136, 46.6753]; // الرياض
+
+function initSampleMap() {
+  const el = document.getElementById("sampleMap");
+  if (!el || typeof L === "undefined") return;
+
+  if (sampleMap) {
+    sampleMap.invalidateSize();
+    return;
+  }
+
+  sampleMap = L.map("sampleMap", {
+    zoomControl: true,
+    attributionControl: false,
+  }).setView(DEFAULT_MAP_CENTER, 6);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "&copy; OpenStreetMap",
+  }).addTo(sampleMap);
+
+  const pinIcon = L.divIcon({
+    className: "map-pin",
+    html: '<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:#1b8354;border:2px solid #fff;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(16,24,40,.35)"></div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+  });
+
+  sampleMarker = L.marker(DEFAULT_MAP_CENTER, { icon: pinIcon, draggable: true }).addTo(sampleMap);
+
+  sampleMarker.on("dragend", () => {
+    const pos = sampleMarker.getLatLng();
+    updateSampleCoords(pos.lat, pos.lng);
+  });
+
+  sampleMap.on("click", (e) => {
+    sampleMarker.setLatLng(e.latlng);
+    updateSampleCoords(e.latlng.lat, e.latlng.lng);
+  });
+
+  setTimeout(() => sampleMap.invalidateSize(), 100);
+}
+
+function updateSampleCoords(lat, lng) {
+  const latStr = lat.toFixed(5);
+  const lngStr = lng.toFixed(5);
+  document.getElementById("sampleLat").value = latStr;
+  document.getElementById("sampleLng").value = lngStr;
+  document.getElementById("sampleCoords").value = `${latStr}, ${lngStr}`;
+}
+
+function locateMe(context) {
+  if (!navigator.geolocation) {
+    toast("تحديد الموقع الجغرافي غير مدعوم في هذا المتصفح");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      if (context === "sample" && sampleMap && sampleMarker) {
+        sampleMarker.setLatLng([latitude, longitude]);
+        sampleMap.setView([latitude, longitude], 13);
+        updateSampleCoords(latitude, longitude);
+        toast("تم تحديد موقعك الحالي على الخريطة", "success");
+      }
+    },
+    () => toast("تعذّر تحديد الموقع — تأكد من صلاحيات الموقع في المتصفح")
+  );
+}
+
+function logout() {
+  sessionStorage.removeItem("pgdms_role");
+  sessionStorage.removeItem("pgdms_user");
+  document.getElementById("appPage").style.display = "none";
+  document.getElementById("loginPage").style.display = "block";
+}
+
+
+
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const role = document.getElementById("roleSelect").value;
+      sessionStorage.setItem("pgdms_role", role);
+      sessionStorage.setItem("pgdms_user", document.getElementById("username").value || "demo.user");
+      currentRole = role;
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("appPage").style.display = "block";
+      init();
+    });
+</script>
+</body>
+</html>

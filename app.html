@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام إدارة بيانات الجينوم النباتي — PGDMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="overlay" id="overlay"></div>
+
+  <div class="app-shell">
+    <div class="gov-bar">
+      <div class="badge-sa"><span class="dot"></span> وزارة البيئة والمياه والزراعة — مركز البذور والتقاوي</div>
+      <span>منظومة منصة نما · نظام الجينوم النباتي (PGDMS)</span>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="mark">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 3L28 10V22L16 29L4 22V10L16 3Z" stroke="white" stroke-width="1.6"/><path d="M16 8C18.5 11 20 14 20 17C20 20.5 18.2 23 16 23C13.8 23 12 20.5 12 17C12 14 13.5 11 16 8Z" fill="white"/></svg>
+        </div>
+        <div>
+          <h1>الجينوم النباتي</h1>
+          <small>PGDMS · نما</small>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+      <div class="sidebar-user">
+        <div class="avatar" id="userAvatar">م</div>
+        <div class="meta">
+          <strong id="userName">مستخدم</strong>
+          <small id="userRoleLabel">الدور</small>
+        </div>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-toggle" id="menuBtn" aria-label="القائمة">☰</button>
+        <div class="topbar-title">
+          <h2 id="pageTitle">لوحة المؤشرات</h2>
+          <p id="pageSubtitle">نظرة عامة على بيانات الجينوم النباتي</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="role-chip" id="roleChip">—</span>
+        <button class="btn btn-outline btn-sm no-print" onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ===== لوحة المؤشرات ===== -->
+      <section class="view active" id="view-dashboard" data-title="لوحة المؤشرات" data-sub="نظرة عامة على بيانات الجينوم النباتي">
+
+        <!-- لوحة تشغيلية للأدوار الأخرى -->
+        <div id="dashboard-ops" data-roles="researcher,technician,manager">
+          <div class="page-head">
+            <div>
+              <h3>لوحة المؤشرات التنفيذية</h3>
+              <p>ملخص تشغيلي لمركز البذور والتقاوي — يُعرض حسب صلاحية الدور.</p>
+            </div>
+            <div class="no-print" style="display:flex;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="navigate('reports')">التقارير التفصيلية</button>
+              <button class="btn btn-primary btn-sm" onclick="window.print()">طباعة الملخص</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="label">عدد النباتات المسجّلة</div>
+              <div class="value">248</div>
+              <div class="trend">▲ 12 هذا الشهر</div>
+            </div>
+            <div class="kpi navy">
+              <div class="label">عدد العينات</div>
+              <div class="value">1,036</div>
+              <div class="trend">▲ 48 هذا الشهر</div>
+            </div>
+            <div class="kpi warn">
+              <div class="label">تحاليل جارية</div>
+              <div class="value">37</div>
+              <div class="trend" style="color:var(--warning)">تحتاج متابعة</div>
+            </div>
+            <div class="kpi info">
+              <div class="label">تحاليل مكتملة ومعتمدة</div>
+              <div class="value">812</div>
+              <div class="trend">نسبة الاعتماد 94%</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><h4>توزيع العينات حسب المنطقة</h4></div>
+              <div class="panel-body">
+                <div class="chart-bars">
+                  <div class="bar-wrap"><div class="bar" style="height:78%"></div><span>الرياض</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:62%"></div><span>القصيم</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:55%"></div><span>عسير</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:48%"></div><span>جازان</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:40%"></div><span>حائل</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:32%"></div><span>تبوك</span></div>
+                  <div class="bar-wrap"><div class="bar" style="height:28%"></div><span>أخرى</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h4>توزيع التحاليل حسب النوع</h4></div>
+              <div class="panel-body">
+                <div class="donut-legend">
+                  <div class="row"><span><i class="dot" style="background:#1b8354"></i> Whole Genome Sequencing</span><strong>34%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#193661"></i> DNA Barcoding</span><strong>22%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#026aa2"></i> SNP Analysis</span><strong>18%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#5ab891"></i> RNA Sequencing</span><strong>15%</strong></div>
+                  <div class="row"><span><i class="dot" style="background:#dc6803"></i> Marker Analysis</span><strong>11%</strong></div>
+                </div>
+                <div style="margin-top:18px;height:12px;border-radius:999px;overflow:hidden;display:flex">
+                  <div style="width:34%;background:#1b8354"></div>
+                  <div style="width:22%;background:#193661"></div>
+                  <div style="width:18%;background:#026aa2"></div>
+                  <div style="width:15%;background:#5ab891"></div>
+                  <div style="width:11%;background:#dc6803"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h4>أحدث العينات</h4>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('samples')">عرض الكل</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>كود العينة</th>
+                    <th>النبات</th>
+                    <th>الحالة</th>
+                    <th>موقع الجمع</th>
+                    <th>تاريخ الجمع</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SMP-2026-0481</td>
+                    <td>قمح صنف نجران</td>
+                    <td><span class="badge badge-amber">قيد التحليل</span></td>
+                    <td>نجران</td>
+                    <td>2026-07-12</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0480</td>
+                    <td>تمر خلاص</td>
+                    <td><span class="badge badge-blue">مستلمة</span></td>
+                    <td>الأحساء</td>
+                    <td>2026-07-11</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0479</td>
+                    <td>شعير حولي</td>
+                    <td><span class="badge badge-green">مكتملة</span></td>
+                    <td>القصيم</td>
+                    <td>2026-07-09</td>
+                  </tr>
+                  <tr>
+                    <td>SMP-2026-0478</td>
+                    <td>طماطم محلية</td>
+                    <td><span class="badge badge-gray">مؤرشفة</span></td>
+                    <td>جازان</td>
+                    <td>2026-07-08</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- لوحة مركز بيانات البذور — مسؤول النظام (مستوحاة من seed.embryo.sa) -->
+        <div id="dashboard-seed" data-roles="admin" class="seed-dash">
+          <div class="seed-hero" style="display:none">
+            <div class="seed-hero-inner">
+              <p class="seed-kicker">وزارة البيئة والمياه والزراعة</p>
+              <h3>مركز بيانات البذور والتقاوي - وزارة الزراعة</h3>
+              <p class="seed-lead">
+                بيانات الجواز لـ 10 محاصيل (قمح الخبز، قمح الدوروم، بن، شعير، دخن، ذرة رفيعة، سمسم، فول، مانجو، بابايا) عبر المناطق السعودية.
+              </p>
+              <div class="seed-hero-pills">
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 2h8a2 2 0 0 1 2 2v16l-6-3-6 3V4a2 2 0 0 1 2-2zm2 5v2h4V7h-4zm0 4v2h4v-2h-4z"/></svg>
+                  <strong>517</strong> إجمالي الاعتمادات
+                </span>
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2C8 2 5 5.5 5 9.5c0 4.5 4.2 8.8 6.2 10.6a1.2 1.2 0 0 0 1.6 0C14.8 18.3 19 14 19 9.5 19 5.5 16 2 12 2zm0 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></svg>
+                  <strong>29</strong> محاصيل بيانات الجواز
+                </span>
+                <span class="seed-hero-pill">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.5 9h-3.1a15 15 0 0 0-1.3-5 8 8 0 0 1 4.4 5zM12 4c.9 1.4 1.8 3.4 2.2 5.5H9.8C10.2 7.4 11.1 5.4 12 4zM4.5 11a8 8 0 0 1 4.4-5 15 15 0 0 0-1.3 5H4.5zm0 2h3.1a15 15 0 0 0 1.3 5 8 8 0 0 1-4.4-5zM12 20c-.9-1.4-1.8-3.4-2.2-5.5h4.4C13.8 16.6 12.9 18.6 12 20zm3.1-1a15 15 0 0 0 1.3-5h3.1a8 8 0 0 1-4.4 5zM9.8 13c.3 1.7.9 3.4 1.6 5h1.2c.7-1.6 1.3-3.3 1.6-5H9.8z"/></svg>
+                  <strong>10</strong> منطقة سعودية
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-kpi-grid">
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico green" aria-hidden="true">🗄️</span>
+              </div>
+              <div class="seed-kpi-value">517</div>
+              <div class="seed-kpi-label">إجمالي الاعتمادات</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico amber" aria-hidden="true">🍃</span>
+              </div>
+              <div class="seed-kpi-value">29</div>
+              <div class="seed-kpi-label">محاصيل مُتتبعة</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico red" aria-hidden="true">🌐</span>
+              </div>
+              <div class="seed-kpi-value">10</div>
+              <div class="seed-kpi-label">مناطق سعودية</div>
+            </article>
+            <article class="seed-kpi">
+              <div class="seed-kpi-top">
+                <span class="seed-trend" aria-hidden="true">↗</span>
+                <span class="seed-kpi-ico brown" aria-hidden="true">💾</span>
+              </div>
+              <div class="seed-kpi-value">9 تيرابايت</div>
+              <div class="seed-kpi-label">بيانات جينومية</div>
+            </article>
+          </div>
+
+          <div class="seed-browse" id="seedBrowse">
+            <div class="seed-cat-grid" id="seedCatGrid">
+              <button type="button" class="seed-cat" data-category="grains" aria-expanded="false">
+                <span class="seed-cat-ico">🌾</span>
+                <strong>الحبوب</strong>
+                <small><span class="seed-cat-count">6 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="legumes" aria-expanded="false">
+                <span class="seed-cat-ico">🫘</span>
+                <strong>البقوليات</strong>
+                <small><span class="seed-cat-count">5 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="vegetables" aria-expanded="false">
+                <span class="seed-cat-ico">🥬</span>
+                <strong>الخضروات</strong>
+                <small><span class="seed-cat-count">3 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="fruits" aria-expanded="false">
+                <span class="seed-cat-ico">🍎</span>
+                <strong>الفواكه</strong>
+                <small><span class="seed-cat-count">12 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="oilseeds" aria-expanded="false">
+                <span class="seed-cat-ico">🌰</span>
+                <strong>البذور الزيتية</strong>
+                <small><span class="seed-cat-count">1 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+              <button type="button" class="seed-cat" data-category="other" aria-expanded="false">
+                <span class="seed-cat-ico">☕</span>
+                <strong>أخرى</strong>
+                <small><span class="seed-cat-count">2 محاصيل</span> <span class="seed-cat-caret">▾</span></small>
+              </button>
+            </div>
+
+            <div class="seed-cat-panel" id="seedCatPanel" hidden>
+              <label class="seed-passport-filter">
+                <input type="checkbox" id="seedGenomicOnly" />
+                <span>لها بيانات جواز سفر جينومية (WGS/GBS) فقط</span>
+              </label>
+              <div class="seed-subcrop-grid" id="seedSubcropGrid"></div>
+            </div>
+
+            <div class="seed-filter-bar" id="seedFilterBar" hidden>
+              <div class="seed-filter-bar-main">
+                <span class="seed-filter-label">
+                  <svg class="seed-filter-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path fill="currentColor" d="M3 5h18l-7 8v5l-4 2v-7L3 5z"/>
+                  </svg>
+                  تصفية حسب:
+                </span>
+                <div class="seed-filter-chips" id="seedFilterChips"></div>
+                <button type="button" class="seed-filter-clear" id="seedFilterClear">
+                  <span aria-hidden="true">×</span> مسح الكل
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-main-grid">
+            <!-- الخريطة يميناً (أول عنصر في RTL) -->
+            <div class="panel seed-map-panel">
+              <div class="seed-map-tabs" role="tablist">
+                <button type="button" class="seed-map-tab" data-seed-tab="zones" role="tab">🗄️ توزيع المناطق</button>
+                <button type="button" class="seed-map-tab active" data-seed-tab="regional" role="tab">📍 التوزيع الإقليمي</button>
+              </div>
+              <div class="panel-body">
+                <div id="seed-tab-regional" class="seed-tab-pane">
+                  <p class="seed-map-title">
+                    <strong>عرض <span id="seedSaudiCount">342</span> اعتماد سعودي</strong>
+                    — خريطة تفاعلية توضح مواقع جمع البذور في المملكة العربية السعودية
+                  </p>
+                  <p class="seed-hint">انقر على علامة منطقة لتمييزها. انقر على بلاطات المحاصيل للتصفية.</p>
+                  <div id="seedMap" class="seed-map-canvas" aria-label="خريطة توزيع الاعتمادات"></div>
+                  <div class="seed-map-legend" id="seedMapLegend" aria-label="مفتاح ألوان المحاصيل"></div>
+                </div>
+                <div id="seed-tab-zones" class="seed-tab-pane" hidden>
+                  <p class="seed-map-title"><strong>توزيع الاعتمادات حسب المناطق الإدارية</strong></p>
+                  <div class="seed-zone-grid" id="seedZonesList"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ملخص بيانات الجواز يساراً -->
+            <div class="seed-side-stack">
+              <aside class="panel seed-passport">
+                <div class="seed-passport-head">
+                  <h4><span class="seed-db-ico" aria-hidden="true">🗄️</span> ملخص بيانات الجواز</h4>
+                  <p class="seed-hint" id="seedPassportHint">انقر على منطقة في الخريطة أو بلاطة محصول للاستكشاف</p>
+                </div>
+                <div class="panel-body seed-passport-body">
+                  <div class="seed-passport-total">
+                    <strong id="seedPassportTotal">517</strong>
+                    <span>إجمالي الاعتمادات</span>
+                  </div>
+                  <div class="seed-crop-list" id="seedCropList"></div>
+                </div>
+              </aside>
+              <div class="seed-side-stats">
+                <div class="seed-stat-card regions">
+                  <strong id="seedActiveRegions">10</strong>
+                  <span>مناطق نشطة</span>
+                </div>
+                <div class="seed-stat-card saudi">
+                  <strong id="seedSaudiFooter">342</strong>
+                  <span>اعتماد سعودي</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="seed-explore">
+            <div class="seed-explore-head">
+              <span class="seed-explore-badge">استكشف البيانات</span>
+              <h3>رؤية شاملة لتوزيع البيانات الجينومية وجوازات البذور عبر المملكة العربية السعودية</h3>
+            </div>
+            <div class="seed-charts-layout">
+              <div class="seed-charts-side">
+                <article class="seed-chart-card">
+                  <header class="seed-chart-head">
+                    <h4>🌱 توزيع المحاصيل</h4>
+                    <p>الاعتمادات حسب نوع المحصول</p>
+                  </header>
+                  <div class="seed-donut-wrap" id="seedCropDistChart"></div>
+                </article>
+                <article class="seed-chart-card">
+                  <header class="seed-chart-head">
+                    <h4>📈 سعودي مقابل دولي</h4>
+                    <p>توزيع المنشأ لكل محصول</p>
+                  </header>
+                  <div class="seed-origin-chart" id="seedOriginChart"></div>
+                  <div class="seed-origin-legend">
+                    <span><i class="saudi"></i> سعودي</span>
+                    <span><i class="intl"></i> دولي</span>
+                  </div>
+                </article>
+              </div>
+              <article class="seed-chart-card seed-chart-regional">
+                <header class="seed-chart-head">
+                  <h4>🌐 نظرة إقليمية</h4>
+                  <p>الاعتمادات السعودية لكل منطقة</p>
+                </header>
+                <div class="seed-region-bars" id="seedRegionChart"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== تسجيل نبات ===== -->
+      <section class="view" id="view-plant-new" data-title="تسجيل نبات جديد" data-sub="إدخال بيانات النبات الأساسية والتصنيف العلمي — الباحث / الموظف">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل نبات جديد</h3>
+            <p>FR-01 · إضافة نبات مع التصنيف العلمي والحالة.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="navigate('plants')">قائمة النباتات</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-body">
+            <form id="plantForm" onsubmit="return submitPlant(event)">
+              <div class="grid-12">
+                <div class="form-group col-6">
+                  <label>اسم النبات *</label>
+                  <input class="form-control" name="PlantName" required placeholder="مثال: قمح صنف نجران" />
+                </div>
+                <div class="form-group col-6">
+                  <label>الاسم العلمي *</label>
+                  <input class="form-control" name="ScientificName" required placeholder="Triticum aestivum" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الاسم الشائع</label>
+                  <input class="form-control" name="CommonName" placeholder="قمح" />
+                </div>
+                <div class="form-group col-4">
+                  <label>النوع (Species)</label>
+                  <input class="form-control" name="Species" placeholder="aestivum" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الصنف (Variety)</label>
+                  <input class="form-control" name="Variety" placeholder="نجران" />
+                </div>
+                <div class="form-group col-8">
+                  <label>الوصف</label>
+                  <textarea class="form-control" name="Description" placeholder="وصف موجز للنبات وخصائصه..."></textarea>
+                </div>
+                <div class="form-group col-4">
+                  <label>الحالة</label>
+                  <select class="form-control" name="Status">
+                    <option>نشط</option>
+                    <option>قيد المراجعة</option>
+                    <option>مؤرشف</option>
+                  </select>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div style="display:flex;gap:10px;justify-content:flex-start">
+                <button type="submit" class="btn btn-primary">حفظ النبات</button>
+                <button type="reset" class="btn btn-outline">مسح الحقول</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== قائمة النباتات ===== -->
+      <section class="view" id="view-plants" data-title="إدارة النباتات" data-sub="البحث والتعديل حسب الاسم أو الاسم العلمي أو الصنف — FR-02 / FR-03">
+        <div class="page-head">
+          <div>
+            <h3>إدارة النباتات</h3>
+            <p>استعراض وتعديل بيانات النباتات والأصناف المسجّلة.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" data-roles="researcher,admin" onclick="navigate('plant-new')">+ تسجيل نبات جديد</button>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث</label>
+            <input class="form-control" placeholder="اسم النبات / علمي / صنف" id="plantSearch" oninput="filterTable('plantsTable', this.value)" />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>نشط</option>
+              <option>قيد المراجعة</option>
+              <option>مؤرشف</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="plantsTable">
+              <thead>
+                <tr>
+                  <th>PlantID</th>
+                  <th>اسم النبات</th>
+                  <th>الاسم العلمي</th>
+                  <th>الصنف</th>
+                  <th>الحالة</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="plantsTableBody">
+                <tr>
+                  <td>PLT-00142</td>
+                  <td>قمح صنف نجران</td>
+                  <td>Triticum aestivum</td>
+                  <td>نجران</td>
+                  <td><span class="badge badge-green">نشط</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00141</td>
+                  <td>تمر خلاص</td>
+                  <td>Phoenix dactylifera</td>
+                  <td>خلاص</td>
+                  <td><span class="badge badge-green">نشط</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00140</td>
+                  <td>شعير حولي</td>
+                  <td>Hordeum vulgare</td>
+                  <td>حولي</td>
+                  <td><span class="badge badge-amber">قيد المراجعة</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+                <tr>
+                  <td>PLT-00138</td>
+                  <td>طماطم محلية</td>
+                  <td>Solanum lycopersicum</td>
+                  <td>جازان محلي</td>
+                  <td><span class="badge badge-gray">مؤرشف</span></td>
+                  <td class="no-print"><button type="button" class="btn btn-ghost btn-sm" onclick="openEditPlantModal(this)">تعديل</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== نافذة تعديل نبات ===== -->
+      <div class="modal-overlay" id="plantEditModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(560px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>تعديل بيانات النبات</h4>
+              <p id="plantEditSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">—</p>
+            </div>
+            <button class="modal-close" onclick="closePlantEditModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="plantEditForm" onsubmit="return submitPlantEdit(event)">
+              <div class="form-group">
+                <label for="editPlantId">PlantID</label>
+                <input class="form-control" id="editPlantId" type="text" readonly dir="ltr" style="text-align:left;background:var(--canvas)" />
+              </div>
+              <div class="form-group">
+                <label for="editPlantName">اسم النبات *</label>
+                <input class="form-control" id="editPlantName" type="text" required placeholder="اسم النبات" />
+              </div>
+              <div class="form-group">
+                <label for="editScientificName">الاسم العلمي *</label>
+                <input class="form-control" id="editScientificName" type="text" required placeholder="Scientific name" dir="ltr" style="text-align:left" />
+              </div>
+              <div class="form-group">
+                <label for="editVariety">الصنف</label>
+                <input class="form-control" id="editVariety" type="text" placeholder="الصنف" />
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label for="editPlantStatus">الحالة *</label>
+                <select class="form-control" id="editPlantStatus" required>
+                  <option value="نشط">نشط</option>
+                  <option value="قيد المراجعة">قيد المراجعة</option>
+                  <option value="مؤرشف">مؤرشف</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closePlantEditModal()">تراجع</button>
+            <button type="submit" form="plantEditForm" class="btn btn-primary">حفظ التعديلات</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== تسجيل عينة ===== -->
+      <section class="view" id="view-sample-new" data-title="تسجيل عينة مرتبطة بنبات" data-sub="إصدار رقم عينة فريد وربطها بالنبات وبيانات الجمع الميداني">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل عينة جديدة</h3>
+            <p>FR-04 · FR-05 · FR-07 — إصدار كود فريد وربط العينة بالنبات الأصلي.</p>
+          </div>
+        </div>
+
+        <div class="status-flow">
+          <div class="status-step current"><span class="num">1</span> مسجّلة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">2</span> مستلمة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">3</span> قيد التحضير</div>
+          <div class="status-step"><span class="sep"></span><span class="num">4</span> قيد التحليل</div>
+          <div class="status-step"><span class="sep"></span><span class="num">5</span> مكتملة</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-body">
+            <form id="sampleForm" onsubmit="return submitSample(event)">
+              <div class="grid-12">
+                <div class="form-group col-4">
+                  <label>كود العينة (تلقائي)</label>
+                  <input class="form-control" id="sampleCodeInput" value="SMP-2026-0482" readonly style="background:#f8fafc;font-weight:700;color:var(--mewa-navy)" />
+                  <p class="help-text">يُصدر النظام رقماً فريداً تلقائياً</p>
+                </div>
+                <div class="form-group col-8">
+                  <label>النبات المرتبط *</label>
+                  <select class="form-control" id="samplePlantSelect" required>
+                    <option value="">اختر النبات...</option>
+                    <option value="قمح صنف نجران">PLT-00142 — قمح صنف نجران</option>
+                    <option value="تمر خلاص">PLT-00141 — تمر خلاص</option>
+                    <option value="شعير حولي">PLT-00140 — شعير حولي</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label>نوع العينة *</label>
+                  <select class="form-control" id="sampleTypeSelect" required>
+                    <option value="ورقة">ورقة</option>
+                    <option value="بذرة">بذرة</option>
+                    <option value="جذر">جذر</option>
+                    <option value="نسيج">نسيج</option>
+                    <option value="DNA مستخلص">DNA مستخلص</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label>تاريخ الجمع *</label>
+                  <input class="form-control" id="sampleDateInput" type="date" required value="2026-07-20" />
+                </div>
+                <div class="form-group col-4">
+                  <label>الجامع / الباحث</label>
+                  <input class="form-control" id="sampleCollectorInput" value="أحمد السبيعي" />
+                </div>
+                <div class="form-group col-12">
+                  <label>موقع الجمع *</label>
+                  <input class="form-control" id="sampleLocationInput" required placeholder="المنطقة / المحافظة" />
+                </div>
+
+                <div class="form-group col-12">
+                  <label>تحديد موقع الجمع على الخريطة (اختياري)</label>
+                  <div class="map-picker">
+                    <div class="map-toolbar no-print">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="locateMe('sample')">📍 استخدام موقعي الحالي</button>
+                      <span class="help-text" style="margin:0">انقر على الخريطة أو حرّك العلامة لتحديد نقطة الجمع بدقة</span>
+                    </div>
+                    <div id="sampleMap" class="map-canvas"></div>
+                    <div class="map-coords">
+                      <div>
+                        <span class="meta-label">خط العرض (Lat)</span>
+                        <input class="form-control" id="sampleLat" readonly value="24.7136" />
+                      </div>
+                      <div>
+                        <span class="meta-label">خط الطول (Lng)</span>
+                        <input class="form-control" id="sampleLng" readonly value="46.6753" />
+                      </div>
+                      <div>
+                        <span class="meta-label">الإحداثيات (تُحفظ تلقائياً)</span>
+                        <input class="form-control" id="sampleCoords" readonly value="24.7136, 46.6753" style="font-weight:700;color:var(--mewa-navy)" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group col-12">
+                  <label>ملاحظات</label>
+                  <textarea class="form-control" placeholder="ملاحظات ميدانية حول العينة..."></textarea>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <button type="submit" class="btn btn-primary">تسجيل العينة</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== قائمة العينات ===== -->
+      <section class="view" id="view-samples" data-title="إدارة العينات" data-sub="متابعة حالة العينة عبر مراحلها المختلفة — FR-06">
+        <div class="page-head">
+          <div>
+            <h3>إدارة العينات</h3>
+            <p>تتبع الحالات: مسجّلة، مستلمة، قيد التحضير، قيد التحليل، مكتملة، مرفوضة، مؤرشفة.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" data-roles="researcher,admin" onclick="navigate('sample-new')">+ تسجيل عينة</button>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث بالكود / النبات</label>
+            <input class="form-control" oninput="filterTable('samplesTable', this.value)" placeholder="SMP-..." />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>مسجّلة</option>
+              <option>مستلمة</option>
+              <option>قيد التحضير</option>
+              <option>قيد التحليل</option>
+              <option>مكتملة</option>
+              <option>مرفوضة</option>
+              <option>مؤرشفة</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>المنطقة</label>
+            <select class="form-control">
+              <option>الكل</option>
+              <option>الرياض</option>
+              <option>القصيم</option>
+              <option>نجران</option>
+              <option>الأحساء</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="samplesTable">
+              <thead>
+                <tr>
+                  <th>كود العينة</th>
+                  <th>النبات</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                  <th>موقع الجمع</th>
+                  <th>تاريخ الجمع</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="samplesTableBody">
+                <tr>
+                  <td>SMP-2026-0481</td>
+                  <td>قمح صنف نجران</td>
+                  <td>بذرة</td>
+                  <td><span class="badge badge-amber">قيد التحليل</span></td>
+                  <td>نجران</td>
+                  <td>2026-07-12</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm" onclick="navigate('receive')">متابعة</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0480</td>
+                  <td>تمر خلاص</td>
+                  <td>ورقة</td>
+                  <td><span class="badge badge-blue">مستلمة</span></td>
+                  <td>الأحساء</td>
+                  <td>2026-07-11</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm" onclick="navigate('receive')">متابعة</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0479</td>
+                  <td>شعير حولي</td>
+                  <td>DNA مستخلص</td>
+                  <td><span class="badge badge-green">مكتملة</span></td>
+                  <td>القصيم</td>
+                  <td>2026-07-09</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm">عرض</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0475</td>
+                  <td>طماطم محلية</td>
+                  <td>نسيج</td>
+                  <td><span class="badge badge-red">مرفوضة</span></td>
+                  <td>جازان</td>
+                  <td>2026-07-05</td>
+                  <td class="no-print"><button class="btn btn-ghost btn-sm">عرض</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== استلام ومراجعة العينة ===== -->
+      <section class="view" id="view-receive" data-title="استلام ومراجعة العينة" data-sub="فني المختبر — تحديث الحالة والتحقق من صلاحية العينة للتحليل">
+        <div class="page-head">
+          <div>
+            <h3>استلام ومراجعة العينة</h3>
+            <p>تحديث حالة العينة بعد الاستلام والتحقق من صلاحيتها قبل إسناد التحليل.</p>
+          </div>
+        </div>
+
+        <div class="status-flow">
+          <div class="status-step done"><span class="num">✓</span> مسجّلة</div>
+          <div class="status-step current"><span class="sep"></span><span class="num">2</span> مستلمة</div>
+          <div class="status-step"><span class="sep"></span><span class="num">3</span> قيد التحضير</div>
+          <div class="status-step"><span class="sep"></span><span class="num">4</span> قيد التحليل</div>
+          <div class="status-step"><span class="sep"></span><span class="num">5</span> مكتملة</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header"><h4>بيانات العينة</h4></div>
+            <div class="panel-body">
+              <div class="grid-2" style="gap:12px;font-size:14px">
+                <div><span style="color:var(--muted);font-size:12px">الكود</span><br /><strong>SMP-2026-0480</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">النبات</span><br /><strong>تمر خلاص</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">نوع العينة</span><br /><strong>ورقة</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">موقع الجمع</span><br /><strong>الأحساء</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">تاريخ الجمع</span><br /><strong>2026-07-11</strong></div>
+                <div><span style="color:var(--muted);font-size:12px">الجامع</span><br /><strong>نورة القحطاني</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h4>إجراء الاستلام / التحديث</h4></div>
+            <div class="panel-body">
+              <form onsubmit="return receiveSample(event)">
+                <div class="form-group">
+                  <label>الحالة الجديدة *</label>
+                  <select class="form-control" required>
+                    <option>مستلمة</option>
+                    <option>قيد التحضير</option>
+                    <option>قيد التحليل</option>
+                    <option>مرفوضة</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>نتيجة مراجعة الصلاحية</label>
+                  <select class="form-control">
+                    <option>صالحة للتحليل</option>
+                    <option>تحتاج إعادة جمع</option>
+                    <option>تالفة / مرفوضة</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>ملاحظات الفني</label>
+                  <textarea class="form-control" placeholder="ملاحظات الاستلام والجودة..."></textarea>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button type="submit" class="btn btn-primary">حفظ التحديث</button>
+                  <button type="button" class="btn btn-outline" onclick="navigate('analysis')">إسناد تحليل</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h4>طابور العينات بانتظار الاستلام</h4></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>الكود</th><th>النبات</th><th>الحالة</th><th>تاريخ الوصول</th><th>إجراء</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SMP-2026-0483</td>
+                  <td>قمح صنف نجران</td>
+                  <td><span class="badge badge-purple">مسجّلة</span></td>
+                  <td>2026-07-20</td>
+                  <td><button class="btn btn-sm btn-primary" onclick="toast('تم استلام العينة','success')">استلام</button></td>
+                </tr>
+                <tr>
+                  <td>SMP-2026-0484</td>
+                  <td>شعير حولي</td>
+                  <td><span class="badge badge-purple">مسجّلة</span></td>
+                  <td>2026-07-20</td>
+                  <td><button class="btn btn-sm btn-primary" onclick="toast('تم استلام العينة','success')">استلام</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== تحليل جينومي ===== -->
+      <section class="view" id="view-analysis" data-title="تسجيل تحليل جينومي ونتائج وملفات" data-sub="فني المختبر — نوع التحليل، النتائج، ورفع الملفات الجينومية">
+        <div class="page-head">
+          <div>
+            <h3>تسجيل تحليل جينومي</h3>
+            <p>FR-08 إلى FR-14 — تسجيل التحليل، إدخال النتائج، ورفع الملفات مع إدارة الإصدارات.</p>
+          </div>
+        </div>
+
+        <div class="tabs no-print">
+          <button class="tab active" data-tab="tab-analysis">بيانات التحليل</button>
+          <button class="tab" data-tab="tab-results">النتائج</button>
+          <button class="tab" data-tab="tab-files">الملفات الجينومية</button>
+        </div>
+
+        <div id="tab-analysis" class="tab-pane">
+          <div class="panel">
+            <div class="panel-body">
+              <form onsubmit="return saveAnalysis(event)">
+                <div class="grid-12">
+                  <div class="form-group col-6">
+                    <label>العينة المرتبطة *</label>
+                    <select class="form-control" required>
+                      <option>SMP-2026-0480 — تمر خلاص</option>
+                      <option>SMP-2026-0481 — قمح صنف نجران</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-6">
+                    <label>نوع التحليل *</label>
+                    <select class="form-control" required>
+                      <option>Whole Genome Sequencing</option>
+                      <option>DNA Barcoding</option>
+                      <option>SNP Analysis</option>
+                      <option>RNA Sequencing</option>
+                      <option>Marker Analysis</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-4">
+                    <label>اسم المختبر</label>
+                    <input class="form-control" value="مختبر الجينوم النباتي — الرياض" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>تاريخ التنفيذ</label>
+                    <input class="form-control" type="date" value="2026-07-20" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>المنفَّذ بواسطة</label>
+                    <input class="form-control" value="فهد العتيبي" />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>حالة التحليل</label>
+                    <input class="form-control" value="قيد التنفيذ" readonly style="background:#f8fafc;font-weight:700;color:var(--mewa-navy)" />
+                    <p class="help-text">تُحدَّث الحالة تلقائياً حسب مراحل التنفيذ والاعتماد</p>
+                  </div>
+                  <div class="form-group col-8">
+                    <label>ملخص النتيجة</label>
+                    <textarea class="form-control" placeholder="ملخص موجز لنتيجة التحليل..."></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ بيانات التحليل</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-results" class="tab-pane" style="display:none">
+          <div class="panel">
+            <div class="panel-header">
+              <h4>نتائج التحليل (AnalysisResult)</h4>
+              <button class="btn btn-sm btn-outline" onclick="addResultRow()">+ إضافة نتيجة</button>
+            </div>
+            <div class="panel-body">
+              <div class="grid-12">
+                <div class="form-group col-6">
+                  <label>وصف النتيجة</label>
+                  <input class="form-control" id="resultDescInput" placeholder="مثال: نسبة تغطية التسلسل" />
+                </div>
+                <div class="form-group col-3">
+                  <label>قيمة النتيجة</label>
+                  <input class="form-control" id="resultValueInput" placeholder="98.4%" />
+                </div>
+                <div class="form-group col-3">
+                  <label>تاريخ النتيجة</label>
+                  <input class="form-control" id="resultDateInput" type="date" value="2026-07-20" />
+                </div>
+              </div>
+              <div class="table-wrap" style="margin-top:12px">
+                <table class="data">
+                  <thead>
+                    <tr><th>ResultID</th><th>الوصف</th><th>القيمة</th><th>التاريخ</th><th>الاعتماد</th></tr>
+                  </thead>
+                  <tbody id="resultsTableBody">
+                    <tr>
+                      <td>RES-9021</td>
+                      <td>تغطية التسلسل (Coverage)</td>
+                      <td>98.4%</td>
+                      <td>2026-07-18</td>
+                      <td><span class="badge badge-amber">بانتظار الاعتماد</span></td>
+                    </tr>
+                    <tr>
+                      <td>RES-9020</td>
+                      <td>جودة القراءة (Q30)</td>
+                      <td>92.1%</td>
+                      <td>2026-07-18</td>
+                      <td><span class="badge badge-amber">بانتظار الاعتماد</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-files" class="tab-pane" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>الملفات الجينومية</h4></div>
+            <div class="panel-body">
+              <div class="upload-zone" onclick="toast('محاكاة رفع ملف جينومي','success')">
+                <div style="font-size:28px">⬆</div>
+                <strong>اسحب الملفات هنا أو انقر للرفع</strong>
+                <p>الأنواع المدعومة: FASTA · FASTQ · VCF · BAM · CSV · Excel · PDF · صور</p>
+              </div>
+              <div class="file-list">
+                <div class="file-row">
+                  <div class="left">
+                    <div class="file-ico">FQ</div>
+                    <div>
+                      <strong>sample_0480_R1.fastq.gz</strong>
+                      <div style="font-size:12px;color:var(--muted)">1.2 GB · رُفع 2026-07-18 · الإصدار v2</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-sm btn-outline" onclick="toast('بدء التحميل','success')">تحميل</button>
+                    <button class="btn btn-sm btn-ghost">إصدارات</button>
+                  </div>
+                </div>
+                <div class="file-row">
+                  <div class="left">
+                    <div class="file-ico">VCF</div>
+                    <div>
+                      <strong>variants_0480.vcf</strong>
+                      <div style="font-size:12px;color:var(--muted)">48 MB · رُفع 2026-07-18 · الإصدار v1</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-sm btn-outline">تحميل</button>
+                    <button class="btn btn-sm btn-ghost">إصدارات</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== لوحة الاعتماد ===== -->
+      <section class="view" id="view-approval" data-title="لوحة المراجعة والاعتماد" data-sub="مدير المختبر — مراجعة واعتماد أو رفض النتائج قبل النشر">
+        <div class="page-head">
+          <div>
+            <h3>لوحة المراجعة والاعتماد</h3>
+            <p>FR-11 — التحكم في اعتماد النتائج قبل إتاحتها للبحث والتقارير.</p>
+          </div>
+          <span class="badge badge-amber" id="pendingCountBadge">3 بانتظار الاعتماد</span>
+        </div>
+
+        <div class="filters">
+          <div class="form-group">
+            <label>بحث</label>
+            <input class="form-control" placeholder="رقم التحليل / العينة / النبات" oninput="filterTable('approvalTable', this.value)" />
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select class="form-control" onchange="filterApprovalStatus(this.value)">
+              <option value="">الكل</option>
+              <option value="بانتظار الاعتماد">بانتظار الاعتماد</option>
+              <option value="معتمد">معتمد</option>
+              <option value="مرفوض">مرفوض</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data" id="approvalTable">
+              <thead>
+                <tr>
+                  <th>رقم التحليل</th>
+                  <th>نوع التحليل</th>
+                  <th>العينة</th>
+                  <th>النبات / الصنف</th>
+                  <th>المنفَّذ بواسطة</th>
+                  <th>تاريخ التنفيذ</th>
+                  <th>الملفات</th>
+                  <th>الحالة</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3310</td>
+                  <td>Whole Genome Sequencing</td>
+                  <td>SMP-2026-0480</td>
+                  <td>تمر خلاص</td>
+                  <td>فهد العتيبي</td>
+                  <td>2026-07-18</td>
+                  <td>2</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3310"
+                      data-type="Whole Genome Sequencing"
+                      data-sample="SMP-2026-0480"
+                      data-plant="تمر خلاص"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="فهد العتيبي"
+                      data-date="2026-07-18"
+                      data-files="2"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تغطية تسلسل 98.4% · جودة Q30 = 92.1% · لم تُرصد شذوذات جوهرية في مؤشرات الجودة."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3308</td>
+                  <td>DNA Barcoding</td>
+                  <td>SMP-2026-0479</td>
+                  <td>شعير حولي</td>
+                  <td>سارة الدوسري</td>
+                  <td>2026-07-17</td>
+                  <td>1</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3308"
+                      data-type="DNA Barcoding"
+                      data-sample="SMP-2026-0479"
+                      data-plant="شعير حولي"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="سارة الدوسري"
+                      data-date="2026-07-17"
+                      data-files="1"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تطابق الباركود مع المرجع بنسبة 99.2% · الصنف مؤكد."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="بانتظار الاعتماد">
+                  <td>ANL-3305</td>
+                  <td>SNP Analysis</td>
+                  <td>SMP-2026-0481</td>
+                  <td>قمح صنف نجران</td>
+                  <td>فهد العتيبي</td>
+                  <td>2026-07-16</td>
+                  <td>0</td>
+                  <td><span class="badge badge-amber" data-status-badge>بانتظار الاعتماد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3305"
+                      data-type="SNP Analysis"
+                      data-sample="SMP-2026-0481"
+                      data-plant="قمح صنف نجران"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="فهد العتيبي"
+                      data-date="2026-07-16"
+                      data-files="0"
+                      data-status="بانتظار الاعتماد"
+                      data-summary="تحديد 1,248 موقع SNP مرتبط بتحمل الجفاف — يحتاج مراجعة منهجية قبل النشر."
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+                <tr data-row-status="معتمد">
+                  <td>ANL-3299</td>
+                  <td>Marker Analysis</td>
+                  <td>SMP-2026-0460</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>2026-07-14</td>
+                  <td>1</td>
+                  <td><span class="badge badge-green" data-status-badge>معتمد</span></td>
+                  <td class="no-print">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="openApprovalDetails(this)"
+                      data-id="ANL-3299"
+                      data-type="Marker Analysis"
+                      data-sample="SMP-2026-0460"
+                      data-plant="—"
+                      data-lab="مختبر الجينوم النباتي — الرياض"
+                      data-performer="—"
+                      data-date="2026-07-10"
+                      data-files="1"
+                      data-status="معتمد"
+                      data-summary="نتائج معتمدة ومتاحة للبحث والتقارير."
+                      data-approved-by="د. هند المطيري"
+                      data-approval-date="2026-07-14"
+                    >التفاصيل</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== نافذة تفاصيل الاعتماد ===== -->
+      <div class="modal-overlay" id="approvalModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header">
+            <div>
+              <h4>تفاصيل طلب الاعتماد — <span id="modalAnalysisId">—</span></h4>
+              <p id="modalStatusLine" style="font-size:12.5px;color:var(--muted);margin-top:2px"></p>
+            </div>
+            <button class="modal-close" onclick="closeApprovalModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="grid-2" style="gap:14px 20px">
+              <div><span class="meta-label">نوع التحليل</span><strong id="modalType">—</strong></div>
+              <div><span class="meta-label">حالة التحليل</span><span id="modalStatusBadge" class="badge">—</span></div>
+              <div><span class="meta-label">رقم العينة</span><strong id="modalSample">—</strong></div>
+              <div><span class="meta-label">النبات / الصنف</span><strong id="modalPlant">—</strong></div>
+              <div><span class="meta-label">اسم المختبر</span><strong id="modalLab">—</strong></div>
+              <div><span class="meta-label">المنفَّذ بواسطة</span><strong id="modalPerformer">—</strong></div>
+              <div><span class="meta-label">تاريخ التنفيذ</span><strong id="modalDate">—</strong></div>
+              <div><span class="meta-label">عدد الملفات المرفقة</span><strong id="modalFiles">—</strong></div>
+            </div>
+            <div class="divider"></div>
+            <div>
+              <span class="meta-label">ملخص النتيجة</span>
+              <p id="modalSummary" style="margin-top:6px;font-size:13.5px;color:var(--ink-2);line-height:1.7">—</p>
+            </div>
+            <div id="modalApprovalInfo" style="display:none;margin-top:14px">
+              <div class="grid-2" style="gap:14px 20px">
+                <div><span class="meta-label">اعتمد بواسطة</span><strong id="modalApprovedBy">—</strong></div>
+                <div><span class="meta-label">تاريخ الاعتماد</span><strong id="modalApprovalDate">—</strong></div>
+              </div>
+            </div>
+            <div id="modalRejectionInfo" style="display:none;margin-top:14px;padding:12px 14px;background:#fef3f2;border:1px solid #fecdca;border-radius:var(--radius-sm)">
+              <div class="grid-2" style="gap:14px 20px">
+                <div><span class="meta-label">سبب الرفض</span><strong id="modalRejectReason" style="color:var(--danger)">—</strong></div>
+                <div><span class="meta-label">تاريخ الرفض</span><strong id="modalRejectDate">—</strong></div>
+              </div>
+              <div style="margin-top:10px">
+                <span class="meta-label">ملاحظات الرفض</span>
+                <p id="modalRejectNotes" style="font-size:13px;color:var(--ink-2);margin-top:4px">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" id="modalActions">
+            <button class="btn btn-outline" onclick="closeApprovalModal()">إغلاق</button>
+            <button class="btn btn-danger" id="modalRejectBtn" onclick="openRejectReasonModal()">رفض مع ملاحظات</button>
+            <button class="btn btn-primary" id="modalApproveBtn" onclick="approveFromModal()">اعتماد ونشر</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة إدخال أسباب الرفض ===== -->
+      <div class="modal-overlay" id="rejectReasonOverlay" style="z-index:300">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(520px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>رفض نتائج التحليل</h4>
+              <p id="rejectContextLine" style="font-size:12.5px;color:var(--muted);margin-top:2px">—</p>
+            </div>
+            <button class="modal-close" onclick="closeRejectReasonModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="rejectReasonForm" onsubmit="return confirmReject(event)">
+              <div class="form-group">
+                <label>سبب الرفض الرئيسي *</label>
+                <select class="form-control" id="rejectReasonSelect" required>
+                  <option value="">اختر السبب...</option>
+                  <option>بيانات أو نتائج غير مكتملة</option>
+                  <option>جودة التسلسل / التحليل غير كافية</option>
+                  <option>عدم تطابق الملفات المرفقة مع النتائج</option>
+                  <option>يتطلب إعادة التحليل من المختبر</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>تفاصيل وملاحظات الرفض *</label>
+                <textarea class="form-control" id="rejectReasonNotes" rows="4" required placeholder="اكتب تفاصيل سبب الرفض ليطّلع عليها الفني المسؤول..."></textarea>
+                <p class="help-text">ستُرسل هذه الملاحظات إلى الفني المنفّذ لإعادة المراجعة والتصحيح.</p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeRejectReasonModal()">تراجع</button>
+            <button type="submit" form="rejectReasonForm" class="btn btn-danger">تأكيد الرفض</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة إضافة / تعديل مستخدم ===== -->
+      <div class="modal-overlay" id="userModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(520px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4 id="userModalTitle">إضافة مستخدم</h4>
+              <p id="userModalSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">أدخل بيانات الحساب وحدّد الدور والحالة.</p>
+            </div>
+            <button class="modal-close" onclick="closeUserModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="userForm" onsubmit="return submitUserForm(event)">
+              <div class="form-group">
+                <label for="userNameInput">الاسم *</label>
+                <input class="form-control" id="userNameInput" type="text" required placeholder="الاسم الكامل" />
+              </div>
+              <div class="form-group">
+                <label for="userUsernameInput">اسم المستخدم *</label>
+                <input class="form-control" id="userUsernameInput" type="text" required placeholder="مثال: a.subaie" dir="ltr" style="text-align:left" />
+              </div>
+              <div class="form-group">
+                <label for="userRoleSelect">الدور *</label>
+                <select class="form-control" id="userRoleSelect" required>
+                  <option value="">اختر الدور...</option>
+                  <option value="researcher">الباحث / الموظف</option>
+                  <option value="technician">فني المختبر</option>
+                  <option value="manager">مدير المختبر</option>
+                  <option value="admin">مسؤول النظام</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label for="userStatusSelect">الحالة *</label>
+                <select class="form-control" id="userStatusSelect" required>
+                  <option value="نشط">نشط</option>
+                  <option value="معطّل">معطّل</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeUserModal()">تراجع</button>
+            <button type="submit" form="userForm" class="btn btn-primary">حفظ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== نافذة تعديل صلاحيات الأدوار ===== -->
+      <div class="modal-overlay" id="rolePermsModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true" style="width:min(560px, 100%)">
+          <div class="modal-header">
+            <div>
+              <h4>تعديل صلاحيات الأدوار</h4>
+              <p id="rolePermsSubtitle" style="font-size:12.5px;color:var(--muted);margin-top:2px">امنح أو امنع الصلاحيات للدور المحدد.</p>
+            </div>
+            <button class="modal-close" onclick="closeRolePermsModal()" aria-label="إغلاق">×</button>
+          </div>
+          <div class="modal-body">
+            <form id="rolePermsForm" onsubmit="return submitRolePermsForm(event)">
+              <div class="form-group">
+                <label for="rolePermsRoleSelect">الدور *</label>
+                <select class="form-control" id="rolePermsRoleSelect" required onchange="loadRolePermsChecks()">
+                  <option value="admin">مسؤول النظام</option>
+                  <option value="researcher">الباحث / الموظف</option>
+                  <option value="technician">فني المختبر</option>
+                  <option value="manager">مدير المختبر</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>الصلاحيات</label>
+                <p class="help-text" style="margin-top:0;margin-bottom:10px">الصلاحيات كما في العمود الأول من مصفوفة الصلاحيات — فعّل لمنح أو عطّل لمنع.</p>
+                <div class="perm-list" id="rolePermsList"></div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeRolePermsModal()">تراجع</button>
+            <button type="submit" form="rolePermsForm" class="btn btn-primary">حفظ الصلاحيات</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== إدارة المستخدمين ===== -->
+      <section class="view" id="view-users" data-title="إدارة المستخدمين والصلاحيات" data-sub="مسؤول النظام — إضافة المستخدمين وتحديد أدوارهم">
+        <div class="page-head">
+          <div>
+            <h3>إدارة المستخدمين والصلاحيات</h3>
+            <p>إدارة الحسابات والأدوار والقوائم المرجعية والإشراف العام.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ إضافة مستخدم</button>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><div class="label">إجمالي المستخدمين</div><div class="value" id="kpiUsersTotal">—</div></div>
+          <div class="kpi navy"><div class="label">باحثون / موظفون</div><div class="value" id="kpiUsersResearchers">—</div></div>
+          <div class="kpi info"><div class="label">فنيو مختبر</div><div class="value" id="kpiUsersTechnicians">—</div></div>
+          <div class="kpi warn"><div class="label">مديرو مختبر</div><div class="value" id="kpiUsersManagers">—</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h4>المستخدمون</h4>
+            <input class="form-control" style="max-width:220px;height:36px" placeholder="بحث بالاسم..." oninput="filterTable('usersTable', this.value)" />
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="usersTable">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>اسم المستخدم</th>
+                  <th>الدور</th>
+                  <th>الحالة</th>
+                  <th>آخر دخول</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h4>مصفوفة الصلاحيات حسب الدور</h4>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openRolePermsModal()">تعديل صلاحيات الأدوار</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="permissionsMatrixTable">
+              <thead>
+                <tr>
+                  <th>الصلاحية</th>
+                  <th>مسؤول النظام</th>
+                  <th>الباحث / الموظف</th>
+                  <th>فني المختبر</th>
+                  <th>مدير المختبر</th>
+                </tr>
+              </thead>
+              <tbody id="permissionsMatrixBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== التقارير ===== -->
+      <section class="view" id="view-reports" data-title="التقارير ولوحة المؤشرات" data-sub="تقارير العينات والتحاليل والملفات والمناطق — حسب صلاحية الدور">
+        <div class="page-head">
+          <div>
+            <h3>التقارير الرئيسية</h3>
+            <p>FR-15 إلى FR-18 — استخراج وتصدير التقارير التشغيلية.</p>
+          </div>
+          <div class="no-print" style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" onclick="toast('تصدير Excel','success')">تصدير Excel</button>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">طباعة / PDF</button>
+          </div>
+        </div>
+
+        <div class="tabs no-print" id="reportTabs">
+          <button class="tab active" data-report="r-samples">تقرير العينات</button>
+          <button class="tab" data-report="r-analyses">تقرير التحاليل</button>
+          <button class="tab" data-report="r-files">تقرير الملفات الجينومية</button>
+          <button class="tab" data-report="r-geo">حسب المنطقة</button>
+          <button class="tab" data-report="r-approval">المعتمدة / غير المعتمدة</button>
+        </div>
+
+        <div class="filters no-print">
+          <div class="form-group">
+            <label>من تاريخ</label>
+            <input class="form-control" type="date" value="2026-01-01" />
+          </div>
+          <div class="form-group">
+            <label>إلى تاريخ</label>
+            <input class="form-control" type="date" value="2026-07-20" />
+          </div>
+          <div class="form-group">
+            <label>النبات / الصنف</label>
+            <select class="form-control"><option>الكل</option><option>قمح</option><option>تمر</option><option>شعير</option></select>
+          </div>
+          <div class="form-group" style="flex:0">
+            <label>&nbsp;</label>
+            <button class="btn btn-navy" onclick="toast('تم تطبيق عوامل التصفية','success')">تطبيق</button>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-samples">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير العينات — رقم العينة، اسم النبات، الحالة، موقع الجمع، تاريخ الجمع</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>رقم العينة</th><th>اسم النبات</th><th>الحالة</th><th>موقع الجمع</th><th>تاريخ الجمع</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SMP-2026-0481</td><td>قمح صنف نجران</td><td>قيد التحليل</td><td>نجران</td><td>2026-07-12</td></tr>
+                  <tr><td>SMP-2026-0480</td><td>تمر خلاص</td><td>مستلمة</td><td>الأحساء</td><td>2026-07-11</td></tr>
+                  <tr><td>SMP-2026-0479</td><td>شعير حولي</td><td>مكتملة</td><td>القصيم</td><td>2026-07-09</td></tr>
+                  <tr><td>SMP-2026-0478</td><td>طماطم محلية</td><td>مؤرشفة</td><td>جازان</td><td>2026-07-08</td></tr>
+                  <tr><td>SMP-2026-0477</td><td>قمح صنف نجران</td><td>مكتملة</td><td>عسير</td><td>2026-07-06</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-analyses" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير التحاليل — النوع، المختبر، الحالة، تاريخ التنفيذ</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>AnalysisID</th><th>نوع التحليل</th><th>المختبر</th><th>حالة التحليل</th><th>تاريخ التنفيذ</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>ANL-3310</td><td>Whole Genome Sequencing</td><td>مختبر الجينوم — الرياض</td><td>بانتظار الاعتماد</td><td>2026-07-18</td></tr>
+                  <tr><td>ANL-3308</td><td>DNA Barcoding</td><td>مختبر الجينوم — الرياض</td><td>معتمد</td><td>2026-07-17</td></tr>
+                  <tr><td>ANL-3305</td><td>SNP Analysis</td><td>مختبر الجينوم — الرياض</td><td>قيد التنفيذ</td><td>2026-07-16</td></tr>
+                  <tr><td>ANL-3299</td><td>RNA Sequencing</td><td>مختبر الجينوم — الرياض</td><td>معتمد</td><td>2026-07-10</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-files" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير الملفات الجينومية — الاسم، النوع، تاريخ الرفع</h4></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr><th>FileID</th><th>اسم الملف</th><th>نوع الملف</th><th>الحجم</th><th>تاريخ الرفع</th><th>بواسطة</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>FIL-8801</td><td>sample_0480_R1.fastq.gz</td><td>FASTQ</td><td>1.2 GB</td><td>2026-07-18</td><td>فهد العتيبي</td></tr>
+                  <tr><td>FIL-8800</td><td>variants_0480.vcf</td><td>VCF</td><td>48 MB</td><td>2026-07-18</td><td>فهد العتيبي</td></tr>
+                  <tr><td>FIL-8795</td><td>barcode_0479.fasta</td><td>FASTA</td><td>2.1 MB</td><td>2026-07-17</td><td>سارة الدوسري</td></tr>
+                  <tr><td>FIL-8788</td><td>report_0460.pdf</td><td>PDF</td><td>1.4 MB</td><td>2026-07-14</td><td>فهد العتيبي</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-geo" style="display:none">
+          <div class="panel">
+            <div class="panel-header"><h4>تقرير العينات حسب المنطقة الجغرافية</h4></div>
+            <div class="panel-body">
+              <div class="chart-bars" style="height:200px">
+                <div class="bar-wrap"><div class="bar" style="height:85%"></div><span>الرياض<br/>214</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:70%"></div><span>القصيم<br/>176</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:60%"></div><span>عسير<br/>148</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:52%"></div><span>جازان<br/>130</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:45%"></div><span>حائل<br/>112</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:38%"></div><span>تبوك<br/>96</span></div>
+                <div class="bar-wrap"><div class="bar" style="height:30%"></div><span>أخرى<br/>160</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pane" id="r-approval" style="display:none">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><h4>النتائج المعتمدة</h4></div>
+              <div class="table-wrap">
+                <table class="data">
+                  <thead><tr><th>النتيجة</th><th>العينة</th><th>المعتمِد</th><th>التاريخ</th></tr></thead>
+                  <tbody>
+                    <tr><td>RES-9010</td><td>SMP-2026-0460</td><td>د. هند المطيري</td><td>2026-07-14</td></tr>
+                    <tr><td>RES-9005</td><td>SMP-2026-0455</td><td>د. هند المطيري</td><td>2026-07-12</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h4>غير المعتمدة / المرفوضة</h4></div>
+              <div class="table-wrap">
+                <table class="data">
+                  <thead><tr><th>النتيجة</th><th>العينة</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+                  <tbody>
+                    <tr><td>RES-9021</td><td>SMP-2026-0480</td><td><span class="badge badge-amber">بانتظار</span></td><td>2026-07-18</td></tr>
+                    <tr><td>RES-8990</td><td>SMP-2026-0440</td><td><span class="badge badge-red">مرفوضة</span></td><td>2026-07-08</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== سجل التدقيق ===== -->
+      <section class="view" id="view-audit" data-title="سجل التدقيق" data-sub="Audit Trail — تاريخ كامل لجميع العمليات">
+        <div class="page-head">
+          <div>
+            <h3>سجل التدقيق (Audit Trail)</h3>
+            <p>تتبع كل عملية إدخال أو تعديل أو اعتماد أو رفع ملفات.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>الوقت</th><th>المستخدم</th><th>الدور</th><th>العملية</th><th>الكيان</th><th>التفاصيل</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>2026-07-20 09:14</td><td>f.otaibi</td><td>فني مختبر</td><td>رفع ملف</td><td>FIL-8801</td><td>sample_0480_R1.fastq.gz</td></tr>
+                <tr><td>2026-07-20 08:55</td><td>a.subaie</td><td>باحث</td><td>تسجيل عينة</td><td>SMP-2026-0482</td><td>ربط بـ PLT-00142</td></tr>
+                <tr><td>2026-07-19 16:40</td><td>h.mutairi</td><td>مدير مختبر</td><td>اعتماد نتيجة</td><td>RES-9010</td><td>تم النشر للبحث</td></tr>
+                <tr><td>2026-07-19 11:02</td><td>k.admin</td><td>مسؤول النظام</td><td>تعديل صلاحية</td><td>USER-018</td><td>ترقية إلى فني مختبر</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
